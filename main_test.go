@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -276,13 +277,11 @@ func TestContinueParsingWhenSkippingFields(t *testing.T) {
 func TestVerbose(t *testing.T) {
 	b := new(bytes.Buffer)
 	log.SetOutput(b)
-	verbose = false
-	logf("test")
+	fmt.Println("test")
 	if len(b.Bytes()) > 0 {
 		t.Errorf("verbose should be off")
 	}
-	verbose = true
-	logf("test")
+	fmt.Println("test")
 	if len(b.Bytes()) == 0 {
 		t.Errorf("verbose should be on")
 	}
