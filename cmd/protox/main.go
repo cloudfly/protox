@@ -270,7 +270,11 @@ type pxFile struct {
 }
 
 func newPxFile(filename string, f *protogen.File) (*pxFile, error) {
-	px, err := os.Create(path.Join(*outDir, strings.ReplaceAll(filename, ".proto", ".px.go")))
+	filename = path.Join(*outDir, strings.ReplaceAll(filename, ".proto", ".px.go"))
+	if err := os.MkdirAll(path.Dir(filename), 0755); err != nil {
+		return nil, err
+	}
+	px, err := os.Create(filename)
 	if err != nil {
 		return nil, err
 	}
