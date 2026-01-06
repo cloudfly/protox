@@ -33,3 +33,10 @@ message TestTest {
     return: "Test"
   };
 }
+
+
+enum Error {
+	InternalServerError = 0 [(protox.goerror) = "internal_server_error"];
+	PermissionDenied = 1 [(protox.goerror) = "permission_denied"];
+	NotFound = 2 [(protox.goerror) = "not_found"];
+}

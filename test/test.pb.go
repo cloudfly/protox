@@ -22,6 +22,55 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Error int32
+
+const (
+	Error_InternalServerError Error = 0
+	Error_PermissionDenied    Error = 1
+	Error_NotFound            Error = 2
+)
+
+// Enum value maps for Error.
+var (
+	Error_name = map[int32]string{
+		0: "InternalServerError",
+		1: "PermissionDenied",
+		2: "NotFound",
+	}
+	Error_value = map[string]int32{
+		"InternalServerError": 0,
+		"PermissionDenied":    1,
+		"NotFound":            2,
+	}
+)
+
+func (x Error) Enum() *Error {
+	p := new(Error)
+	*p = x
+	return p
+}
+
+func (x Error) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Error) Descriptor() protoreflect.EnumDescriptor {
+	return file_test_test_proto_enumTypes[0].Descriptor()
+}
+
+func (Error) Type() protoreflect.EnumType {
+	return &file_test_test_proto_enumTypes[0]
+}
+
+func (x Error) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Error.Descriptor instead.
+func (Error) EnumDescriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{0}
+}
+
 type TestTest struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Id     int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -157,7 +206,11 @@ const file_test_test_proto_rawDesc = "" +
 	"updateTime:\x1b\xaa\xc3&\r\n" +
 	"\x05Table\x12\x04Test\xb2\xc3&\x06\x12\x04jsonB\a\n" +
 	"\x05_nameB\t\n" +
-	"\a_PublicB!Z\x1fgithub.com/cloudfly/protox/testb\x06proto3"
+	"\a_Public*\x85\x01\n" +
+	"\x05Error\x122\n" +
+	"\x13InternalServerError\x10\x00\x1a\x19\xba\xc3&\x15internal_server_error\x12+\n" +
+	"\x10PermissionDenied\x10\x01\x1a\x15\xba\xc3&\x11permission_denied\x12\x1b\n" +
+	"\bNotFound\x10\x02\x1a\r\xba\xc3&\tnot_foundB!Z\x1fgithub.com/cloudfly/protox/testb\x06proto3"
 
 var (
 	file_test_test_proto_rawDescOnce sync.Once
@@ -171,14 +224,16 @@ func file_test_test_proto_rawDescGZIP() []byte {
 	return file_test_test_proto_rawDescData
 }
 
+var file_test_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_test_test_proto_goTypes = []any{
-	(*TestTest)(nil),         // 0: test.TestTest
-	(*protox.Timestamp)(nil), // 1: protox.Timestamp
+	(Error)(0),               // 0: test.Error
+	(*TestTest)(nil),         // 1: test.TestTest
+	(*protox.Timestamp)(nil), // 2: protox.Timestamp
 }
 var file_test_test_proto_depIdxs = []int32{
-	1, // 0: test.TestTest.createTime:type_name -> protox.Timestamp
-	1, // 1: test.TestTest.updateTime:type_name -> protox.Timestamp
+	2, // 0: test.TestTest.createTime:type_name -> protox.Timestamp
+	2, // 1: test.TestTest.updateTime:type_name -> protox.Timestamp
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -197,13 +252,14 @@ func file_test_test_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_test_test_proto_goTypes,
 		DependencyIndexes: file_test_test_proto_depIdxs,
+		EnumInfos:         file_test_test_proto_enumTypes,
 		MessageInfos:      file_test_test_proto_msgTypes,
 	}.Build()
 	File_test_test_proto = out.File

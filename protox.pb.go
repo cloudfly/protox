@@ -195,6 +195,14 @@ var file_protox_proto_extTypes = []protoimpl.ExtensionInfo{
 		Tag:           "bytes,78902,opt,name=gojson",
 		Filename:      "protox.proto",
 	},
+	{
+		ExtendedType:  (*descriptorpb.EnumValueOptions)(nil),
+		ExtensionType: (*string)(nil),
+		Field:         78903,
+		Name:          "protox.goerror",
+		Tag:           "bytes,78903,opt,name=goerror",
+		Filename:      "protox.proto",
+	},
 }
 
 // Extension fields to descriptorpb.MessageOptions.
@@ -209,6 +217,12 @@ var (
 var (
 	// optional string gojson = 78902;
 	E_Gojson = &file_protox_proto_extTypes[2]
+)
+
+// Extension fields to descriptorpb.EnumValueOptions.
+var (
+	// optional string goerror = 78903;
+	E_Goerror = &file_protox_proto_extTypes[3]
 )
 
 var File_protox_proto protoreflect.FileDescriptor
@@ -230,7 +244,8 @@ const file_protox_proto_rawDesc = "" +
 	"\v_serializer:X\n" +
 	"\bgomethod\x12\x1f.google.protobuf.MessageOptions\x18\xb5\xe8\x04 \x01(\v2\x16.protox.GoMethodOptionR\bgomethod\x88\x01\x01:M\n" +
 	"\x05gosql\x12\x1f.google.protobuf.MessageOptions\x18\xb6\xe8\x04 \x01(\v2\x11.protox.SQLOptionR\x05gosql\x88\x01\x01::\n" +
-	"\x06gojson\x12\x1d.google.protobuf.FieldOptions\x18\xb6\xe8\x04 \x01(\tR\x06gojson\x88\x01\x01B\x1cZ\x1agithub.com/cloudfly/protoxb\x06proto3"
+	"\x06gojson\x12\x1d.google.protobuf.FieldOptions\x18\xb6\xe8\x04 \x01(\tR\x06gojson\x88\x01\x01:@\n" +
+	"\agoerror\x12!.google.protobuf.EnumValueOptions\x18\xb7\xe8\x04 \x01(\tR\agoerror\x88\x01\x01B\x1cZ\x1agithub.com/cloudfly/protoxb\x06proto3"
 
 var (
 	file_protox_proto_rawDescOnce sync.Once
@@ -246,22 +261,24 @@ func file_protox_proto_rawDescGZIP() []byte {
 
 var file_protox_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_protox_proto_goTypes = []any{
-	(*Timestamp)(nil),                   // 0: protox.Timestamp
-	(*GoMethodOption)(nil),              // 1: protox.GoMethodOption
-	(*SQLOption)(nil),                   // 2: protox.SQLOption
-	(*descriptorpb.MessageOptions)(nil), // 3: google.protobuf.MessageOptions
-	(*descriptorpb.FieldOptions)(nil),   // 4: google.protobuf.FieldOptions
+	(*Timestamp)(nil),                     // 0: protox.Timestamp
+	(*GoMethodOption)(nil),                // 1: protox.GoMethodOption
+	(*SQLOption)(nil),                     // 2: protox.SQLOption
+	(*descriptorpb.MessageOptions)(nil),   // 3: google.protobuf.MessageOptions
+	(*descriptorpb.FieldOptions)(nil),     // 4: google.protobuf.FieldOptions
+	(*descriptorpb.EnumValueOptions)(nil), // 5: google.protobuf.EnumValueOptions
 }
 var file_protox_proto_depIdxs = []int32{
 	3, // 0: protox.gomethod:extendee -> google.protobuf.MessageOptions
 	3, // 1: protox.gosql:extendee -> google.protobuf.MessageOptions
 	4, // 2: protox.gojson:extendee -> google.protobuf.FieldOptions
-	1, // 3: protox.gomethod:type_name -> protox.GoMethodOption
-	2, // 4: protox.gosql:type_name -> protox.SQLOption
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	3, // [3:5] is the sub-list for extension type_name
-	0, // [0:3] is the sub-list for extension extendee
+	5, // 3: protox.goerror:extendee -> google.protobuf.EnumValueOptions
+	1, // 4: protox.gomethod:type_name -> protox.GoMethodOption
+	2, // 5: protox.gosql:type_name -> protox.SQLOption
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	4, // [4:6] is the sub-list for extension type_name
+	0, // [0:4] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
@@ -279,7 +296,7 @@ func file_protox_proto_init() {
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protox_proto_rawDesc), len(file_protox_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   3,
-			NumExtensions: 3,
+			NumExtensions: 4,
 			NumServices:   0,
 		},
 		GoTypes:           file_protox_proto_goTypes,

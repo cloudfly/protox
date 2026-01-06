@@ -48,7 +48,7 @@ func (data TestTest) Value() (driver.Value, error) {
 }
 
 
-func (x TestTest) MarshalJSON() ([]byte, error) {
+func (x TestTest) JSON() ([]byte, error) {
 	data := map[string]any{
 		"NAME": x.Name,
 		"PublicId": x.PublicId,
@@ -61,7 +61,7 @@ func (x TestTest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(data)
 }
 
-func (x *TestTest) UnmarshalJSON(content []byte) (error) {
+func (x *TestTest) FromJSON(content []byte) (error) {
 	data := map[string]any{
 		"_public": &x.Public,
 		"PublicId": &x.PublicId,
@@ -72,4 +72,16 @@ func (x *TestTest) UnmarshalJSON(content []byte) (error) {
 		"UpdateTime": &x.UpdateTime,
 	}
 	return json.Unmarshal(content, &data)
+}
+
+func (x Error) Error() string {
+	switch x {
+		case Error_PermissionDenied: 
+			return "permission_denied"
+		case Error_NotFound: 
+			return "not_found"
+		case Error_InternalServerError: 
+			return "internal_server_error"
+	}
+	return fmt.Sprintf("unknown Error %d", x)
 }

@@ -73,16 +73,23 @@ func handleFile(filename string, f *protogen.File) error {
 		}
 	}
 
+	for _, enum := range f.Enums {
+		if err := handleEnum(px, f, enum); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func handleEnum(px *pxFile, f *protogen.File, e *protogen.Enum) error {
+	if err := generateGoError(px, e); err != nil {
+		return err
+	}
 	return nil
 }
 
 func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
-	// 生成消息
-	for _, field := range m.Fields {
-		if err := handleField(f, m, field); err != nil {
-			return err
-		}
-	}
 	opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions)
 	if opt == nil {
 		return nil
@@ -97,9 +104,11 @@ func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 			return err
 		}
 	}
+
 	if err := generateGoJSONMarshaler(px, m); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -111,6 +120,38 @@ func handleField(f *protogen.File, m *protogen.Message, field *protogen.Field) e
 	if opt == nil {
 		return nil
 	}
+	return nil
+}
+
+func generateGoError(f *pxFile, e *protogen.Enum) error {
+	errMsgs := make(map[string]string)
+	defined := false
+	for _, ev := range e.Values {
+		opt, _ := ev.Desc.Options().(*descriptorpb.EnumValueOptions)
+		if opt != nil && proto.HasExtension(opt, protox.E_Goerror) {
+			defined = true
+			value := proto.GetExtension(opt, protox.E_Goerror)
+			errMsgs[ev.GoIdent.GoName] = value.(string)
+		} else {
+			errMsgs[ev.GoIdent.GoName] = ev.GoIdent.GoName
+		}
+	}
+
+	if !defined {
+		// no any json option defined, skip
+		return nil
+	}
+
+	f.Writeln("")
+	f.Writeln("func (x %s) Error() string {", e.GoIdent.GoName)
+	defer f.Writeln("}")
+	f.WritelnIndent(1, "switch x {")
+	for k, v := range errMsgs {
+		f.WritelnIndent(2, "case %s: ", k)
+		f.WritelnIndent(3, "return %q", v)
+	}
+	f.WritelnIndent(1, "}")
+	f.WritelnIndent(1, "return fmt.Sprintf(\"unknown %s %%d\", x)", e.GoIdent.GoName)
 	return nil
 }
 
