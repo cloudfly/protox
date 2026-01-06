@@ -47,3 +47,18 @@ message Test {
 }
 
 ```
+
+### 3. Use protox plugin in buf.yaml
+
+```
+go install github.com/cloudfly/protoxy/cmd/protox@latest
+```
+
+```
+plugins:
+  - local: protox
+    out: gen
+    opt: 
+      - paths=source_relative
+      - out=gen
+```
