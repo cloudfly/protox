@@ -1,0 +1,31 @@
+syntax="proto3";
+
+package protox;
+
+option go_package = "github.com/cloudfly/protox";
+
+import "google/protobuf/descriptor.proto";
+
+message Timestamp {
+	uint32 seconds = 1;
+	uint32 nanos = 2;
+}
+
+message GoMethodOption {
+	string name = 1 [targets = TARGET_TYPE_MESSAGE];
+	optional string return = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
+message SQLOption {
+	optional string serializer = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
+extend google.protobuf.MessageOptions {
+	optional GoMethodOption gomethod = 78901;
+	optional SQLOption gosql = 78902;
+}
+
+
+extend google.protobuf.FieldOptions {
+	optional string gojson = 78902;
+}

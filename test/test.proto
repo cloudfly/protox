@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package test;
+
+option go_package = "github.com/cloudfly/protox/test";
+
+import "protox.proto";
+
+message TestTest {
+  int64 id = 1 [(protox.gojson) = '-'];
+
+  optional string name   = 2 [(protox.gojson) = "NAME,readonly"];
+  optional string Public = 3 [(protox.gojson) = "_public,writeonly"];
+
+  // @gotags: db:"-" json:"id"
+  string publicId = 5;
+  // @gotags: db:"type"
+  string type = 8; // 'enum' | 'message'
+  // @gotags: db:"description"
+  string description = 9;
+  // @gotags: db:"fields"
+  int64 projectId = 11;
+  // @gotags: db:"createTime"
+  protox.Timestamp createTime = 12;
+  // @gotags: db:"updateTime"
+  protox.Timestamp updateTime = 13;
+
+  option (protox.gosql) = {
+    serializer: "json"
+  };
+  option (protox.gomethod) = {
+    name  : "Table",
+    return: "Test"
+  };
+}
