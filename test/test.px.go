@@ -76,10 +76,12 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 
 func (x TestOrmx) OrmxFieldOption(fieldName string) string {
 	switch fieldName {
-		case "Name": 
-			return "name,insert,select,op:eq"
+		case "Noop": 
+			return "noop"
 		case "Id": 
 			return "id,insert"
+		case "Name": 
+			return "name,insert,select,op:eq"
 	}
 	return ""
 }

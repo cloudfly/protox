@@ -189,6 +189,7 @@ type TestOrmx struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Noop          string                 `protobuf:"bytes,3,opt,name=noop,proto3" json:"noop,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -237,6 +238,13 @@ func (x *TestOrmx) GetName() string {
 	return ""
 }
 
+func (x *TestOrmx) GetNoop() string {
+	if x != nil {
+		return x.Noop
+	}
+	return ""
+}
+
 var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
@@ -259,11 +267,12 @@ const file_test_test_proto_rawDesc = "" +
 	"updateTime:\x1b\xaa\xc3&\r\n" +
 	"\x05Table\x12\x04Test\xb2\xc3&\x06\x12\x04jsonB\a\n" +
 	"\x05_nameB\t\n" +
-	"\a_Public\"^\n" +
+	"\a_Public\"r\n" +
 	"\bTestOrmx\x12\x1e\n" +
 	"\x02id\x18\x01 \x01(\x03B\x0e\xba\xc3&\n" +
 	"\xaa\xc3&\x02id\xb0\xc3&\x01R\x02id\x122\n" +
-	"\x04name\x18\x02 \x01(\tB\x1e\xba\xc3&\x1a\xaa\xc3&\x04name\xb0\xc3&\x01\xb8\xc3&\x01\xc0\xc3&\x00\xfa\xc3&\x02eqR\x04name*\x85\x01\n" +
+	"\x04name\x18\x02 \x01(\tB\x1e\xba\xc3&\x1a\xaa\xc3&\x04name\xb0\xc3&\x01\xb8\xc3&\x01\xc0\xc3&\x00\xfa\xc3&\x02eqR\x04name\x12\x12\n" +
+	"\x04noop\x18\x03 \x01(\tR\x04noop*\x85\x01\n" +
 	"\x05Error\x122\n" +
 	"\x13InternalServerError\x10\x00\x1a\x19\xba\xc3&\x15internal_server_error\x12+\n" +
 	"\x10PermissionDenied\x10\x01\x1a\x15\xba\xc3&\x11permission_denied\x12\x1b\n" +

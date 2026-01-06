@@ -165,13 +165,17 @@ func generateOrmxFieldOption(f *pxFile, m *protogen.Message) error {
 		if opt != nil && proto.HasExtension(opt, protox.E_Ormx) {
 			value := proto.GetExtension(opt, protox.E_Ormx)
 			if value == nil {
-				ormxOptions[field.GoName] = &protox.OrmxOption{Column: field.GoIdent.GoName}
+				ormxOptions[field.GoName] = &protox.OrmxOption{Column: string(field.Desc.Name())}
 			} else {
 				defined = true
-				ormxOptions[field.GoName] = value.(*protox.OrmxOption)
+				oo := value.(*protox.OrmxOption)
+				if oo.Column == "" {
+					oo.Column = string(field.Desc.Name()) // use proto field name by default
+				}
+				ormxOptions[field.GoName] = oo
 			}
 		} else {
-			ormxOptions[field.GoName] = &protox.OrmxOption{Column: field.GoIdent.GoName}
+			ormxOptions[field.GoName] = &protox.OrmxOption{Column: string(field.Desc.Name())}
 		}
 	}
 
@@ -191,11 +195,7 @@ func generateOrmxFieldOptionMethod(f *pxFile, m *protogen.Message, opts map[stri
 	optstrs := make(map[string]string)
 	for name, opt := range opts {
 		s := &strings.Builder{}
-		if column := opt.GetColumn(); column == "" {
-			s.WriteString(m.GoIdent.GoName)
-		} else {
-			s.WriteString(column)
-		}
+		s.WriteString(opt.GetColumn()) // column must can not be empty
 		if opt.GetInsert() {
 			s.WriteString(",insert")
 		}
