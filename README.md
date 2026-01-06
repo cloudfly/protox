@@ -5,6 +5,12 @@
 ### 1. Copy `protox.proto` files.
 Add the `protox.proto` into your proto folder. The folder includes by folder configured in inputs section in `buf.yaml`
 
+```
+proto_directory/
+  \_ protox/
+     \_ protox.proto
+```
+
 ### 2. Import `protox.proto` in your on `.proto` file.
 
 ```
