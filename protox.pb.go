@@ -170,6 +170,106 @@ func (x *SQLOption) GetSerializer() string {
 	return ""
 }
 
+type OrmxOption struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Column        string                 `protobuf:"bytes,78901,opt,name=column,proto3" json:"column,omitempty"`
+	Insert        *bool                  `protobuf:"varint,78902,opt,name=insert,proto3,oneof" json:"insert,omitempty"`
+	Select        *bool                  `protobuf:"varint,78903,opt,name=select,proto3,oneof" json:"select,omitempty"`
+	Update        *bool                  `protobuf:"varint,78904,opt,name=update,proto3,oneof" json:"update,omitempty"`
+	Type          *string                `protobuf:"bytes,78910,opt,name=type,proto3,oneof" json:"type,omitempty"`
+	Operate       *string                `protobuf:"bytes,78911,opt,name=operate,proto3,oneof" json:"operate,omitempty"`
+	Incr          *int32                 `protobuf:"varint,78912,opt,name=incr,proto3,oneof" json:"incr,omitempty"`
+	Desr          *int32                 `protobuf:"varint,78913,opt,name=desr,proto3,oneof" json:"desr,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrmxOption) Reset() {
+	*x = OrmxOption{}
+	mi := &file_protox_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrmxOption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrmxOption) ProtoMessage() {}
+
+func (x *OrmxOption) ProtoReflect() protoreflect.Message {
+	mi := &file_protox_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrmxOption.ProtoReflect.Descriptor instead.
+func (*OrmxOption) Descriptor() ([]byte, []int) {
+	return file_protox_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *OrmxOption) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *OrmxOption) GetInsert() bool {
+	if x != nil && x.Insert != nil {
+		return *x.Insert
+	}
+	return false
+}
+
+func (x *OrmxOption) GetSelect() bool {
+	if x != nil && x.Select != nil {
+		return *x.Select
+	}
+	return false
+}
+
+func (x *OrmxOption) GetUpdate() bool {
+	if x != nil && x.Update != nil {
+		return *x.Update
+	}
+	return false
+}
+
+func (x *OrmxOption) GetType() string {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return ""
+}
+
+func (x *OrmxOption) GetOperate() string {
+	if x != nil && x.Operate != nil {
+		return *x.Operate
+	}
+	return ""
+}
+
+func (x *OrmxOption) GetIncr() int32 {
+	if x != nil && x.Incr != nil {
+		return *x.Incr
+	}
+	return 0
+}
+
+func (x *OrmxOption) GetDesr() int32 {
+	if x != nil && x.Desr != nil {
+		return *x.Desr
+	}
+	return 0
+}
+
 var file_protox_proto_extTypes = []protoimpl.ExtensionInfo{
 	{
 		ExtendedType:  (*descriptorpb.MessageOptions)(nil),
@@ -196,6 +296,14 @@ var file_protox_proto_extTypes = []protoimpl.ExtensionInfo{
 		Filename:      "protox.proto",
 	},
 	{
+		ExtendedType:  (*descriptorpb.FieldOptions)(nil),
+		ExtensionType: (*OrmxOption)(nil),
+		Field:         78903,
+		Name:          "protox.ormx",
+		Tag:           "bytes,78903,opt,name=ormx",
+		Filename:      "protox.proto",
+	},
+	{
 		ExtendedType:  (*descriptorpb.EnumValueOptions)(nil),
 		ExtensionType: (*string)(nil),
 		Field:         78903,
@@ -217,12 +325,14 @@ var (
 var (
 	// optional string gojson = 78902;
 	E_Gojson = &file_protox_proto_extTypes[2]
+	// optional protox.OrmxOption ormx = 78903;
+	E_Ormx = &file_protox_proto_extTypes[3]
 )
 
 // Extension fields to descriptorpb.EnumValueOptions.
 var (
 	// optional string goerror = 78903;
-	E_Goerror = &file_protox_proto_extTypes[3]
+	E_Goerror = &file_protox_proto_extTypes[4]
 )
 
 var File_protox_proto protoreflect.FileDescriptor
@@ -241,10 +351,29 @@ const file_protox_proto_rawDesc = "" +
 	"\n" +
 	"serializer\x18\x02 \x01(\tB\x03\x98\x01\x03H\x00R\n" +
 	"serializer\x88\x01\x01B\r\n" +
-	"\v_serializer:X\n" +
+	"\v_serializer\"\xe5\x02\n" +
+	"\n" +
+	"OrmxOption\x12\x1d\n" +
+	"\x06column\x18\xb5\xe8\x04 \x01(\tB\x03\x98\x01\x04R\x06column\x12\"\n" +
+	"\x06insert\x18\xb6\xe8\x04 \x01(\bB\x03\x98\x01\x04H\x00R\x06insert\x88\x01\x01\x12\"\n" +
+	"\x06select\x18\xb7\xe8\x04 \x01(\bB\x03\x98\x01\x04H\x01R\x06select\x88\x01\x01\x12\"\n" +
+	"\x06update\x18\xb8\xe8\x04 \x01(\bB\x03\x98\x01\x04H\x02R\x06update\x88\x01\x01\x12\x1e\n" +
+	"\x04type\x18\xbe\xe8\x04 \x01(\tB\x03\x98\x01\x04H\x03R\x04type\x88\x01\x01\x12$\n" +
+	"\aoperate\x18\xbf\xe8\x04 \x01(\tB\x03\x98\x01\x04H\x04R\aoperate\x88\x01\x01\x12\x1e\n" +
+	"\x04incr\x18\xc0\xe8\x04 \x01(\x05B\x03\x98\x01\x04H\x05R\x04incr\x88\x01\x01\x12\x1e\n" +
+	"\x04desr\x18\xc1\xe8\x04 \x01(\x05B\x03\x98\x01\x04H\x06R\x04desr\x88\x01\x01B\t\n" +
+	"\a_insertB\t\n" +
+	"\a_selectB\t\n" +
+	"\a_updateB\a\n" +
+	"\x05_typeB\n" +
+	"\n" +
+	"\b_operateB\a\n" +
+	"\x05_incrB\a\n" +
+	"\x05_desr:X\n" +
 	"\bgomethod\x12\x1f.google.protobuf.MessageOptions\x18\xb5\xe8\x04 \x01(\v2\x16.protox.GoMethodOptionR\bgomethod\x88\x01\x01:M\n" +
 	"\x05gosql\x12\x1f.google.protobuf.MessageOptions\x18\xb6\xe8\x04 \x01(\v2\x11.protox.SQLOptionR\x05gosql\x88\x01\x01::\n" +
-	"\x06gojson\x12\x1d.google.protobuf.FieldOptions\x18\xb6\xe8\x04 \x01(\tR\x06gojson\x88\x01\x01:@\n" +
+	"\x06gojson\x12\x1d.google.protobuf.FieldOptions\x18\xb6\xe8\x04 \x01(\tR\x06gojson\x88\x01\x01:J\n" +
+	"\x04ormx\x12\x1d.google.protobuf.FieldOptions\x18\xb7\xe8\x04 \x01(\v2\x12.protox.OrmxOptionR\x04ormx\x88\x01\x01:@\n" +
 	"\agoerror\x12!.google.protobuf.EnumValueOptions\x18\xb7\xe8\x04 \x01(\tR\agoerror\x88\x01\x01B\x1cZ\x1agithub.com/cloudfly/protoxb\x06proto3"
 
 var (
@@ -259,26 +388,29 @@ func file_protox_proto_rawDescGZIP() []byte {
 	return file_protox_proto_rawDescData
 }
 
-var file_protox_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_protox_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_protox_proto_goTypes = []any{
 	(*Timestamp)(nil),                     // 0: protox.Timestamp
 	(*GoMethodOption)(nil),                // 1: protox.GoMethodOption
 	(*SQLOption)(nil),                     // 2: protox.SQLOption
-	(*descriptorpb.MessageOptions)(nil),   // 3: google.protobuf.MessageOptions
-	(*descriptorpb.FieldOptions)(nil),     // 4: google.protobuf.FieldOptions
-	(*descriptorpb.EnumValueOptions)(nil), // 5: google.protobuf.EnumValueOptions
+	(*OrmxOption)(nil),                    // 3: protox.OrmxOption
+	(*descriptorpb.MessageOptions)(nil),   // 4: google.protobuf.MessageOptions
+	(*descriptorpb.FieldOptions)(nil),     // 5: google.protobuf.FieldOptions
+	(*descriptorpb.EnumValueOptions)(nil), // 6: google.protobuf.EnumValueOptions
 }
 var file_protox_proto_depIdxs = []int32{
-	3, // 0: protox.gomethod:extendee -> google.protobuf.MessageOptions
-	3, // 1: protox.gosql:extendee -> google.protobuf.MessageOptions
-	4, // 2: protox.gojson:extendee -> google.protobuf.FieldOptions
-	5, // 3: protox.goerror:extendee -> google.protobuf.EnumValueOptions
-	1, // 4: protox.gomethod:type_name -> protox.GoMethodOption
-	2, // 5: protox.gosql:type_name -> protox.SQLOption
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	4, // [4:6] is the sub-list for extension type_name
-	0, // [0:4] is the sub-list for extension extendee
+	4, // 0: protox.gomethod:extendee -> google.protobuf.MessageOptions
+	4, // 1: protox.gosql:extendee -> google.protobuf.MessageOptions
+	5, // 2: protox.gojson:extendee -> google.protobuf.FieldOptions
+	5, // 3: protox.ormx:extendee -> google.protobuf.FieldOptions
+	6, // 4: protox.goerror:extendee -> google.protobuf.EnumValueOptions
+	1, // 5: protox.gomethod:type_name -> protox.GoMethodOption
+	2, // 6: protox.gosql:type_name -> protox.SQLOption
+	3, // 7: protox.ormx:type_name -> protox.OrmxOption
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	5, // [5:8] is the sub-list for extension type_name
+	0, // [0:5] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
@@ -289,14 +421,15 @@ func file_protox_proto_init() {
 	}
 	file_protox_proto_msgTypes[1].OneofWrappers = []any{}
 	file_protox_proto_msgTypes[2].OneofWrappers = []any{}
+	file_protox_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protox_proto_rawDesc), len(file_protox_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
-			NumExtensions: 4,
+			NumMessages:   4,
+			NumExtensions: 5,
 			NumServices:   0,
 		},
 		GoTypes:           file_protox_proto_goTypes,

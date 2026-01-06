@@ -71,7 +71,7 @@ func (Error) EnumDescriptor() ([]byte, []int) {
 	return file_test_test_proto_rawDescGZIP(), []int{0}
 }
 
-type TestTest struct {
+type TestCommon struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Id     int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name   *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -92,20 +92,20 @@ type TestTest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TestTest) Reset() {
-	*x = TestTest{}
+func (x *TestCommon) Reset() {
+	*x = TestCommon{}
 	mi := &file_test_test_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TestTest) String() string {
+func (x *TestCommon) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TestTest) ProtoMessage() {}
+func (*TestCommon) ProtoMessage() {}
 
-func (x *TestTest) ProtoReflect() protoreflect.Message {
+func (x *TestCommon) ProtoReflect() protoreflect.Message {
 	mi := &file_test_test_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -117,80 +117,133 @@ func (x *TestTest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TestTest.ProtoReflect.Descriptor instead.
-func (*TestTest) Descriptor() ([]byte, []int) {
+// Deprecated: Use TestCommon.ProtoReflect.Descriptor instead.
+func (*TestCommon) Descriptor() ([]byte, []int) {
 	return file_test_test_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *TestTest) GetId() int64 {
+func (x *TestCommon) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *TestTest) GetName() string {
+func (x *TestCommon) GetName() string {
 	if x != nil && x.Name != nil {
 		return *x.Name
 	}
 	return ""
 }
 
-func (x *TestTest) GetPublic() string {
+func (x *TestCommon) GetPublic() string {
 	if x != nil && x.Public != nil {
 		return *x.Public
 	}
 	return ""
 }
 
-func (x *TestTest) GetPublicId() string {
+func (x *TestCommon) GetPublicId() string {
 	if x != nil {
 		return x.PublicId
 	}
 	return ""
 }
 
-func (x *TestTest) GetType() string {
+func (x *TestCommon) GetType() string {
 	if x != nil {
 		return x.Type
 	}
 	return ""
 }
 
-func (x *TestTest) GetDescription() string {
+func (x *TestCommon) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *TestTest) GetProjectId() int64 {
+func (x *TestCommon) GetProjectId() int64 {
 	if x != nil {
 		return x.ProjectId
 	}
 	return 0
 }
 
-func (x *TestTest) GetCreateTime() *protox.Timestamp {
+func (x *TestCommon) GetCreateTime() *protox.Timestamp {
 	if x != nil {
 		return x.CreateTime
 	}
 	return nil
 }
 
-func (x *TestTest) GetUpdateTime() *protox.Timestamp {
+func (x *TestCommon) GetUpdateTime() *protox.Timestamp {
 	if x != nil {
 		return x.UpdateTime
 	}
 	return nil
 }
 
+type TestOrmx struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TestOrmx) Reset() {
+	*x = TestOrmx{}
+	mi := &file_test_test_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestOrmx) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestOrmx) ProtoMessage() {}
+
+func (x *TestOrmx) ProtoReflect() protoreflect.Message {
+	mi := &file_test_test_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestOrmx.ProtoReflect.Descriptor instead.
+func (*TestOrmx) Descriptor() ([]byte, []int) {
+	return file_test_test_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *TestOrmx) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *TestOrmx) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 var File_test_test_proto protoreflect.FileDescriptor
 
 const file_test_test_proto_rawDesc = "" +
 	"\n" +
-	"\x0ftest/test.proto\x12\x04test\x1a\fprotox.proto\"\x88\x03\n" +
-	"\bTestTest\x12\x15\n" +
+	"\x0ftest/test.proto\x12\x04test\x1a\fprotox.proto\"\x8a\x03\n" +
+	"\n" +
+	"TestCommon\x12\x15\n" +
 	"\x02id\x18\x01 \x01(\x03B\x05\xb2\xc3&\x01-R\x02id\x12*\n" +
 	"\x04name\x18\x02 \x01(\tB\x11\xb2\xc3&\rNAME,readonlyH\x00R\x04name\x88\x01\x01\x122\n" +
 	"\x06Public\x18\x03 \x01(\tB\x15\xb2\xc3&\x11_public,writeonlyH\x01R\x06Public\x88\x01\x01\x12\x1a\n" +
@@ -206,7 +259,11 @@ const file_test_test_proto_rawDesc = "" +
 	"updateTime:\x1b\xaa\xc3&\r\n" +
 	"\x05Table\x12\x04Test\xb2\xc3&\x06\x12\x04jsonB\a\n" +
 	"\x05_nameB\t\n" +
-	"\a_Public*\x85\x01\n" +
+	"\a_Public\"^\n" +
+	"\bTestOrmx\x12\x1e\n" +
+	"\x02id\x18\x01 \x01(\x03B\x0e\xba\xc3&\n" +
+	"\xaa\xc3&\x02id\xb0\xc3&\x01R\x02id\x122\n" +
+	"\x04name\x18\x02 \x01(\tB\x1e\xba\xc3&\x1a\xaa\xc3&\x04name\xb0\xc3&\x01\xb8\xc3&\x01\xc0\xc3&\x00\xfa\xc3&\x02eqR\x04name*\x85\x01\n" +
 	"\x05Error\x122\n" +
 	"\x13InternalServerError\x10\x00\x1a\x19\xba\xc3&\x15internal_server_error\x12+\n" +
 	"\x10PermissionDenied\x10\x01\x1a\x15\xba\xc3&\x11permission_denied\x12\x1b\n" +
@@ -225,15 +282,16 @@ func file_test_test_proto_rawDescGZIP() []byte {
 }
 
 var file_test_test_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_test_test_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_test_test_proto_goTypes = []any{
 	(Error)(0),               // 0: test.Error
-	(*TestTest)(nil),         // 1: test.TestTest
-	(*protox.Timestamp)(nil), // 2: protox.Timestamp
+	(*TestCommon)(nil),       // 1: test.TestCommon
+	(*TestOrmx)(nil),         // 2: test.TestOrmx
+	(*protox.Timestamp)(nil), // 3: protox.Timestamp
 }
 var file_test_test_proto_depIdxs = []int32{
-	2, // 0: test.TestTest.createTime:type_name -> protox.Timestamp
-	2, // 1: test.TestTest.updateTime:type_name -> protox.Timestamp
+	3, // 0: test.TestCommon.createTime:type_name -> protox.Timestamp
+	3, // 1: test.TestCommon.updateTime:type_name -> protox.Timestamp
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -253,7 +311,7 @@ func file_test_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_test_proto_rawDesc), len(file_test_test_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

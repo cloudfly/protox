@@ -90,22 +90,24 @@ func handleEnum(px *pxFile, f *protogen.File, e *protogen.Enum) error {
 }
 
 func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
-	opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions)
-	if opt == nil {
-		return nil
-	}
-	if proto.HasExtension(opt, protox.E_Gomethod) {
-		if err := generateGoMethods(px, m, proto.GetExtension(opt, protox.E_Gomethod)); err != nil {
-			return err
+	if opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions); opt != nil {
+		if proto.HasExtension(opt, protox.E_Gomethod) {
+			if err := generateGoMethods(px, m, proto.GetExtension(opt, protox.E_Gomethod)); err != nil {
+				return err
+			}
 		}
-	}
-	if proto.HasExtension(opt, protox.E_Gosql) {
-		if err := generateSerializer(px, m, proto.GetExtension(opt, protox.E_Gosql)); err != nil {
-			return err
+		if proto.HasExtension(opt, protox.E_Gosql) {
+			if err := generateSerializer(px, m, proto.GetExtension(opt, protox.E_Gosql)); err != nil {
+				return err
+			}
 		}
 	}
 
 	if err := generateGoJSONMarshaler(px, m); err != nil {
+		return err
+	}
+
+	if err := generateOrmxFieldOption(px, m); err != nil {
 		return err
 	}
 
@@ -152,6 +154,81 @@ func generateGoError(f *pxFile, e *protogen.Enum) error {
 	}
 	f.WritelnIndent(1, "}")
 	f.WritelnIndent(1, "return fmt.Sprintf(\"unknown %s %%d\", x)", e.GoIdent.GoName)
+	return nil
+}
+
+func generateOrmxFieldOption(f *pxFile, m *protogen.Message) error {
+	ormxOptions := make(map[string]*protox.OrmxOption)
+	defined := false
+	for _, field := range m.Fields {
+		opt, _ := field.Desc.Options().(*descriptorpb.FieldOptions)
+		if opt != nil && proto.HasExtension(opt, protox.E_Ormx) {
+			value := proto.GetExtension(opt, protox.E_Ormx)
+			if value == nil {
+				ormxOptions[field.GoName] = &protox.OrmxOption{Column: field.GoIdent.GoName}
+			} else {
+				defined = true
+				ormxOptions[field.GoName] = value.(*protox.OrmxOption)
+			}
+		} else {
+			ormxOptions[field.GoName] = &protox.OrmxOption{Column: field.GoIdent.GoName}
+		}
+	}
+
+	if !defined {
+		// no any ormx option defined, skip
+		return nil
+	}
+
+	return generateOrmxFieldOptionMethod(f, m, ormxOptions)
+}
+
+func generateOrmxFieldOptionMethod(f *pxFile, m *protogen.Message, opts map[string]*protox.OrmxOption) error {
+	f.Writeln("")
+	f.Writeln("func (x %s) OrmxFieldOption(fieldName string) string {", m.GoIdent.GoName)
+	defer f.Writeln("}")
+
+	optstrs := make(map[string]string)
+	for name, opt := range opts {
+		s := &strings.Builder{}
+		if column := opt.GetColumn(); column == "" {
+			s.WriteString(m.GoIdent.GoName)
+		} else {
+			s.WriteString(column)
+		}
+		if opt.GetInsert() {
+			s.WriteString(",insert")
+		}
+		if opt.GetSelect() {
+			s.WriteString(",select")
+		}
+		if opt.GetUpdate() {
+			s.WriteString(",update")
+		}
+		if opt.Incr != nil {
+			s.WriteString(fmt.Sprintf(",incr:%d", opt.GetIncr()))
+		}
+		if opt.Desr != nil {
+			s.WriteString(fmt.Sprintf(",decr:%d", opt.GetDesr()))
+		}
+		if op := opt.GetOperate(); op != "" {
+			s.WriteString(fmt.Sprintf(",op:%s", op))
+		}
+		if t := opt.GetType(); t != "" {
+			s.WriteString(fmt.Sprintf("type=%s", t))
+		}
+		optstrs[name] = s.String()
+	}
+
+	f.WritelnIndent(1, "switch fieldName {")
+	for name, optstr := range optstrs {
+		f.WritelnIndent(2, `case "%s": `, name)
+		f.WritelnIndent(3, "return %q", optstr)
+	}
+	f.WritelnIndent(1, "}")
+
+	f.WritelnIndent(1, `return ""`)
+
 	return nil
 }
 

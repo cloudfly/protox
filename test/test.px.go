@@ -17,10 +17,10 @@ var (
 )
 
 
-func (*TestTest) Table() string { return "Test" }
+func (*TestCommon) Table() string { return "Test" }
 
-func (data *TestTest) Scan(src any) error {
-	*data = TestTest{}
+func (data *TestCommon) Scan(src any) error {
+	*data = TestCommon{}
 	if src == nil {
 		return nil
 	}
@@ -31,7 +31,7 @@ func (data *TestTest) Scan(src any) error {
 	case []byte:
 		content = value
 	default:
-		return fmt.Errorf("can not convert %#v into TestTest", src)
+		return fmt.Errorf("can not convert %#v into TestCommon", src)
 	}
 	if len(content) == 0 {
 		return nil
@@ -39,7 +39,7 @@ func (data *TestTest) Scan(src any) error {
 	return json.Unmarshal(content, data)
 }
 
-func (data TestTest) Value() (driver.Value, error) {
+func (data TestCommon) Value() (driver.Value, error) {
 	content, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (data TestTest) Value() (driver.Value, error) {
 }
 
 
-func (x TestTest) JSON() ([]byte, error) {
+func (x TestCommon) JSON() ([]byte, error) {
 	data := map[string]any{
 		"NAME": x.Name,
 		"PublicId": x.PublicId,
@@ -61,7 +61,7 @@ func (x TestTest) JSON() ([]byte, error) {
 	return json.Marshal(data)
 }
 
-func (x *TestTest) FromJSON(content []byte) (error) {
+func (x *TestCommon) FromJSON(content []byte) (error) {
 	data := map[string]any{
 		"_public": &x.Public,
 		"PublicId": &x.PublicId,
@@ -74,14 +74,24 @@ func (x *TestTest) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
+func (x TestOrmx) OrmxFieldOption(fieldName string) string {
+	switch fieldName {
+		case "Name": 
+			return "name,insert,select,op:eq"
+		case "Id": 
+			return "id,insert"
+	}
+	return ""
+}
+
 func (x Error) Error() string {
 	switch x {
+		case Error_InternalServerError: 
+			return "internal_server_error"
 		case Error_PermissionDenied: 
 			return "permission_denied"
 		case Error_NotFound: 
 			return "not_found"
-		case Error_InternalServerError: 
-			return "internal_server_error"
 	}
 	return fmt.Sprintf("unknown Error %d", x)
 }

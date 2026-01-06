@@ -6,7 +6,7 @@ option go_package = "github.com/cloudfly/protox/test";
 
 import "protox.proto";
 
-message TestTest {
+message TestCommon {
   int64 id = 1 [(protox.gojson) = '-'];
 
   optional string name   = 2 [(protox.gojson) = "NAME,readonly"];
@@ -32,6 +32,23 @@ message TestTest {
     name  : "Table",
     return: "Test"
   };
+}
+
+message TestOrmx {
+  int64 id = 1 [
+    (protox.ormx).column = "id",
+    (protox.ormx).insert = true
+  ];
+
+  string name = 2 [
+    (protox.ormx) = {
+      column: "name",
+      insert: true,
+      select: true,
+      update: false,
+      operate: "eq",
+    }
+  ];
 }
 
 
