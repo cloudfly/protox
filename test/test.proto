@@ -9,8 +9,8 @@ import "protox.proto";
 message TestCommon {
   int64 id = 1 [(protox.gojson) = '-'];
 
-  optional string name   = 2 [(protox.gojson) = "NAME,readonly"];
-  optional string Public = 3 [(protox.gojson) = "_public,writeonly"];
+  optional string name   = 2 [(protox.gojson) = "NAME,readonly", (protox.gotag) = "db:\"name\", op:\"eq\""];
+  optional string Public = 3 [(protox.gojson) = "_public,writeonly", (protox.gotag) = "db:\"public\""];
 
   // @gotags: db:"-" json:"id"
   string publicId = 5;
@@ -30,29 +30,13 @@ message TestCommon {
   };
   option (protox.gomethod) = {
     name  : "Table",
-    return: "Test"
+    returnString: "Test"
+  };
+  option (protox.gomethod) = {
+    name  : "Error",
+    returnString: "test error"
   };
 }
-
-message TestOrmx {
-  int64 id = 1 [
-    (protox.ormx).column = "id",
-    (protox.ormx).insert = true
-  ];
-
-  string name = 2 [
-    (protox.ormx) = {
-      column: "name",
-      insert: true,
-      select: true,
-      update: false,
-      operate: "eq",
-    }
-  ];
-
-  string noop = 3;
-}
-
 
 enum Error {
 	InternalServerError = 0 [(protox.goerror) = "internal_server_error"];

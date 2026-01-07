@@ -13,33 +13,23 @@ message Timestamp {
 
 message GoMethodOption {
 	string name = 1 [targets = TARGET_TYPE_MESSAGE];
-	optional string return = 2 [targets = TARGET_TYPE_MESSAGE];
+	optional string returnString = 2 [targets = TARGET_TYPE_MESSAGE];
+	optional int64 returnInt64 = 3 [targets = TARGET_TYPE_MESSAGE];
+	optional bool returnBool = 4 [targets = TARGET_TYPE_MESSAGE];
 }
 
 message SQLOption {
 	optional string serializer = 2 [targets = TARGET_TYPE_MESSAGE];
 }
 
-message OrmxOption {
-	string column = 78901 [targets = TARGET_TYPE_FIELD];
-	optional bool insert = 78902 [targets = TARGET_TYPE_FIELD];
-	optional bool select = 78903 [targets = TARGET_TYPE_FIELD];
-	optional bool update = 78904 [targets = TARGET_TYPE_FIELD];
-	optional string type = 78910 [targets = TARGET_TYPE_FIELD];
-	optional string operate = 78911 [targets = TARGET_TYPE_FIELD];
-	optional int32 incr = 78912 [targets = TARGET_TYPE_FIELD];
-	optional int32 desr = 78913 [targets = TARGET_TYPE_FIELD];
-}
-
 extend google.protobuf.MessageOptions {
-	optional GoMethodOption gomethod = 78901;
+	repeated GoMethodOption gomethod = 78901;
 	optional SQLOption gosql = 78902;
 }
 
-
 extend google.protobuf.FieldOptions {
 	optional string gojson = 78902;
-	optional OrmxOption ormx = 78903;
+	optional string gotag = 78904;
 }
 
 extend google.protobuf.EnumValueOptions {

@@ -17,7 +17,9 @@ var (
 )
 
 
-func (*TestCommon) Table() string { return "Test" }
+func (TestCommon) Table() string { return "Test" }
+
+func (TestCommon) Error() string { return "test error" }
 
 func (data *TestCommon) Scan(src any) error {
 	*data = TestCommon{}
@@ -74,38 +76,14 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
-func (x TestOrmx) OrmxColumnOption(fieldName string) string {
-	switch fieldName {
-		case "Noop": 
-			return "noop"
-		case "Id": 
-			return "id,insert:true"
-		case "Name": 
-			return "name,insert:true,select:true,update:false,op:eq"
-	}
-	return ""
-}
-
-func (x TestOrmx) OrmxColumn(fieldName string) string {
-	switch fieldName {
-		case "Noop": 
-			return "noop"
-		case "Id": 
-			return "id"
-		case "Name": 
-			return "name"
-	}
-	return ""
-}
-
 func (x Error) Error() string {
 	switch x {
-		case Error_NotFound: 
-			return "not_found"
 		case Error_InternalServerError: 
 			return "internal_server_error"
 		case Error_PermissionDenied: 
 			return "permission_denied"
+		case Error_NotFound: 
+			return "not_found"
 	}
 	return fmt.Sprintf("unknown Error %d", x)
 }

@@ -2,10 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"path"
-	"slices"
 	"strings"
 	"unsafe"
 
@@ -31,21 +29,35 @@ var (
 )
 
 func main() {
-	filenames := []string{}
 	protogen.Options{ParamFunc: flags.Set}.Run(func(gen *protogen.Plugin) error {
-		for p, f := range gen.FilesByPath {
-			if shouldGenerate(f) {
-				gengo.GenerateFile(gen, f)
-				filenames = append(filenames, p)
-			}
-		}
-
 		gen.SupportedFeatures = gengo.SupportedFeatures
-		for p, f := range gen.FilesByPath {
+		for filename, f := range gen.FilesByPath {
 			if shouldGenerate(f) {
-				if err := handleFile(p, f); err != nil {
+				gendFile := gengo.GenerateFile(gen, f)
+				// skip the file, so that this file will be ignored in Response and no related .pb.go file will be generated,
+				// Therefore the generateGoTag() will generate .pb.go file instead.
+				gendFile.Skip()
+
+				px, err := newPxFile(filename, f)
+				if err != nil {
 					return err
 				}
+				defer px.Close()
+
+				log.Info().Str("file", filename).Msg("Generating go tags ...")
+				content, err := gendFile.Content()
+				if err != nil {
+					return err
+				}
+				if err := generateGoTag(px, f, content); err != nil {
+					return err
+				}
+				log.Info().Str("file", filename).Msg("Completed generating .pb.go file")
+
+				if err := handleFile(px, f); err != nil {
+					return err
+				}
+				log.Info().Str("file", filename).Msg("Completed handling .px.go file ...")
 			}
 		}
 		return nil
@@ -56,38 +68,29 @@ func shouldGenerate(f *protogen.File) bool {
 	if !f.Generate {
 		return false
 	}
-	if f.GoImportPath == "github.com/cloudfly/protox" {
-		// ignore the protox.proto
-		return false
-	}
+	/*
+		if f.GoImportPath == "github.com/cloudfly/protox" {
+			// ignore the protox.proto
+			return false
+		}
+	*/
 	if strings.HasPrefix(string(f.GoImportPath), "google.golang.org") {
 		return false
 	}
 	return true
 }
 
-func handleFile(filename string, f *protogen.File) error {
-
-	log.Info().Str("file", filename).Msg("Handling proto file ...")
-
-	px, err := newPxFile(filename, f)
-	if err != nil {
-		return err
-	}
-	defer px.Close()
-
+func handleFile(px *pxFile, f *protogen.File) error {
 	for _, message := range f.Messages {
 		if err := handleMessage(px, f, message); err != nil {
 			return err
 		}
 	}
-
 	for _, enum := range f.Enums {
 		if err := handleEnum(px, f, enum); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -116,238 +119,6 @@ func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 		return err
 	}
 
-	if err := generateOrmxFieldOption(px, m); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func handleField(f *protogen.File, m *protogen.Message, field *protogen.Field) error {
-	if field == nil {
-		return nil
-	}
-	opt, _ := field.Desc.Options().(*descriptorpb.FieldOptions)
-	if opt == nil {
-		return nil
-	}
-	return nil
-}
-
-func generateGoError(f *pxFile, e *protogen.Enum) error {
-	errMsgs := make(map[string]string)
-	defined := false
-	for _, ev := range e.Values {
-		opt, _ := ev.Desc.Options().(*descriptorpb.EnumValueOptions)
-		if opt != nil && proto.HasExtension(opt, protox.E_Goerror) {
-			defined = true
-			value := proto.GetExtension(opt, protox.E_Goerror)
-			errMsgs[ev.GoIdent.GoName] = value.(string)
-		} else {
-			errMsgs[ev.GoIdent.GoName] = ev.GoIdent.GoName
-		}
-	}
-
-	if !defined {
-		// no any json option defined, skip
-		return nil
-	}
-
-	f.Writeln("")
-	f.Writeln("func (x %s) Error() string {", e.GoIdent.GoName)
-	defer f.Writeln("}")
-	f.WritelnIndent(1, "switch x {")
-	for k, v := range errMsgs {
-		f.WritelnIndent(2, "case %s: ", k)
-		f.WritelnIndent(3, "return %q", v)
-	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, "return fmt.Sprintf(\"unknown %s %%d\", x)", e.GoIdent.GoName)
-	return nil
-}
-
-func generateOrmxFieldOption(f *pxFile, m *protogen.Message) error {
-	ormxOptions := make(map[string]*protox.OrmxOption)
-	defined := false
-	for _, field := range m.Fields {
-		opt, _ := field.Desc.Options().(*descriptorpb.FieldOptions)
-		if opt != nil && proto.HasExtension(opt, protox.E_Ormx) {
-			value := proto.GetExtension(opt, protox.E_Ormx)
-			if value == nil {
-				ormxOptions[field.GoName] = &protox.OrmxOption{Column: string(field.Desc.Name())}
-			} else {
-				defined = true
-				oo := value.(*protox.OrmxOption)
-				if oo.Column == "" {
-					oo.Column = string(field.Desc.Name()) // use proto field name by default
-				}
-				ormxOptions[field.GoName] = oo
-			}
-		} else {
-			ormxOptions[field.GoName] = &protox.OrmxOption{Column: string(field.Desc.Name())}
-		}
-	}
-
-	if !defined {
-		// no any ormx option defined, skip
-		return nil
-	}
-
-	return generateOrmxColumnOptionMethod(f, m, ormxOptions)
-}
-
-func generateOrmxColumnOptionMethod(f *pxFile, m *protogen.Message, opts map[string]*protox.OrmxOption) error {
-	f.Writeln("")
-	f.Writeln("func (x %s) OrmxColumnOption(fieldName string) string {", m.GoIdent.GoName)
-
-	optstrs := make(map[string]string)
-	for name, opt := range opts {
-		s := &strings.Builder{}
-		s.WriteString(opt.GetColumn()) // column must can not be empty
-		if opt.Insert != nil {
-			s.WriteString(fmt.Sprintf(",insert:%t", *opt.Insert))
-		}
-		if opt.Select != nil {
-			s.WriteString(fmt.Sprintf(",select:%t", *opt.Select))
-		}
-		if opt.Update != nil {
-			s.WriteString(fmt.Sprintf(",update:%t", *opt.Update))
-		}
-		if opt.Incr != nil {
-			s.WriteString(fmt.Sprintf(",incr:%d", opt.GetIncr()))
-		}
-		if opt.Desr != nil {
-			s.WriteString(fmt.Sprintf(",decr:%d", opt.GetDesr()))
-		}
-		if op := opt.GetOperate(); op != "" {
-			s.WriteString(fmt.Sprintf(",op:%s", op))
-		}
-		if t := opt.GetType(); t != "" {
-			s.WriteString(fmt.Sprintf("type:%s", t))
-		}
-		optstrs[name] = s.String()
-	}
-
-	f.WritelnIndent(1, "switch fieldName {")
-	for name, optstr := range optstrs {
-		f.WritelnIndent(2, `case "%s": `, name)
-		f.WritelnIndent(3, "return %q", optstr)
-	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, `return ""`)
-	f.Writeln("}")
-
-	f.Writeln("")
-	f.Writeln("func (x %s) OrmxColumn(fieldName string) string {", m.GoIdent.GoName)
-	f.WritelnIndent(1, "switch fieldName {")
-	for name, opt := range opts {
-		f.WritelnIndent(2, `case "%s": `, name)
-		f.WritelnIndent(3, "return %q", opt.Column)
-	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, `return ""`)
-
-	f.Writeln("}")
-
-	return nil
-}
-
-func generateGoJSONMarshaler(f *pxFile, m *protogen.Message) error {
-	jsonNames := make(map[string]JSONOption)
-	defined := false
-	for _, field := range m.Fields {
-		opt, _ := field.Desc.Options().(*descriptorpb.FieldOptions)
-		if opt != nil && proto.HasExtension(opt, protox.E_Gojson) {
-			value := proto.GetExtension(opt, protox.E_Gojson)
-			if value.(string) == "" {
-				jsonNames[field.GoName] = JSONOption{Name: field.GoName}
-			} else {
-				defined = true
-				items := strings.Split(value.(string), ",")
-				jsonNames[field.GoName] = JSONOption{
-					Name:      items[0],
-					ReadOnly:  slices.Contains(items[1:], "readonly"),
-					WriteOnly: slices.Contains(items[1:], "writeonly"),
-				}
-			}
-		} else {
-			jsonNames[field.GoName] = JSONOption{Name: field.GoName}
-		}
-	}
-
-	if !defined {
-		// no any json option defined, skip
-		return nil
-	}
-
-	if err := generateGoJSONMarshal(f, m, jsonNames); err != nil {
-		return err
-	}
-	if err := generateGoJSONUnmarshal(f, m, jsonNames); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func generateGoJSONMarshal(f *pxFile, m *protogen.Message, jsonNames map[string]JSONOption) error {
-	f.Writeln("")
-	f.Writeln("func (x %s) JSON() ([]byte, error) {", m.GoIdent.GoName)
-	defer f.Writeln("}")
-	f.WritelnIndent(1, "data := map[string]any{")
-	for _, field := range m.Fields {
-		if c := field.GoName[0]; c >= 'A' && c <= 'Z' {
-			// only handle exported Go Field
-			opt, ok := jsonNames[field.GoName]
-			if !ok {
-				continue
-			}
-			if opt.Name == "-" || opt.WriteOnly {
-				// if field is writeonly, represent it should not be marshaled into JSON
-				continue
-			}
-			f.WritelnIndent(2, `"%s": x.%s,`, opt.Name, field.GoName)
-		}
-	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, "return json.Marshal(data)")
-	return nil
-}
-
-func generateGoJSONUnmarshal(f *pxFile, m *protogen.Message, jsonNames map[string]JSONOption) error {
-	f.Writeln("")
-	f.Writeln("func (x *%s) FromJSON(content []byte) (error) {", m.GoIdent.GoName)
-	defer f.Writeln("}")
-	f.WritelnIndent(1, "data := map[string]any{")
-	for _, field := range m.Fields {
-		if c := field.GoName[0]; c >= 'A' && c <= 'Z' {
-			// only handle exported Go Field
-			opt, ok := jsonNames[field.GoName]
-			if !ok {
-				continue
-			}
-			if opt.Name == "-" || opt.ReadOnly {
-				// if field is readonly, represent it should not be unmarshaled from JSON
-				continue
-			}
-			f.WritelnIndent(2, `"%s": &x.%s,`, opt.Name, field.GoName)
-		}
-	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, "return json.Unmarshal(content, &data)")
-	return nil
-
-}
-
-func generateGoMethods(f *pxFile, m *protogen.Message, value any) error {
-	genWriteln(f, "")
-	def := value.(*protox.GoMethodOption)
-	if def.Return == nil {
-		f.WriteString(fmt.Sprintf(`func (*%s) %s() { }`, m.GoIdent.GoName, def.Name))
-	} else {
-		f.WriteString(fmt.Sprintf(`func (*%s) %s() string { return "%s" }`, m.GoIdent.GoName, def.Name, def.GetReturn()))
-	}
-	genWriteln(f, "")
 	return nil
 }
 

@@ -1,4 +1,15 @@
 {
 	"python-envs.defaultEnvManager": "ms-python.python:system",
-	"python-envs.pythonProjects": []
+	"python-envs.pythonProjects": [],
+	"trae.internal.tab.enableRename": false,
+	"trae.internal.tab.enableAutoImport": false,
+	"trae.internal.enableInlineChat": false,
+	"trae.internal.enableFix": false,
+	"trae.internal.enableCodelens": {
+		"enableInlineExplain": false,
+		"enableInlineDocumentation": false
+	},
+	"trae.internal.enableInlineCommand": false,
+	"trae.internal.tab.cue": true,
+	"trae.internal.tab.enableTabKeyboardShortcuts": true
 }
