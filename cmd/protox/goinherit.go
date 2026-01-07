@@ -16,13 +16,16 @@ func generateGoInherit(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *pr
 		parentName = parentName[i+1:]
 	}
 
-	px.Writeln("")
-	px.Writeln(fmt.Sprintf("func (x *%s) From%s(parent *%s) *%s {", m.GoIdent.GoName, parentName, parentName, m.GoIdent.GoName))
-	px.WritelnIndent(1, "if x == nil || parent == nil {")
-	px.WritelnIndent(2, "return x")
-	px.WritelnIndent(1, "}")
-
 	parentMsg := findMessage(gen, opt.Message, f.Proto.GetPackage())
+	if parentMsg == nil {
+		return fmt.Errorf("inherit message %s not found", opt.Message)
+	}
+
+	px.Writeln("")
+	px.Writeln(fmt.Sprintf("func (x *%s) From%s(parent *%s) {", m.GoIdent.GoName, parentName, parentName))
+	px.WritelnIndent(1, "if x == nil || parent == nil {")
+	px.WritelnIndent(2, "return")
+	px.WritelnIndent(1, "}")
 
 	for _, f := range parentMsg.Fields {
 		if slices.Contains(opt.Omit, string(f.Desc.Name())) {
@@ -31,8 +34,27 @@ func generateGoInherit(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *pr
 		px.WritelnIndent(1, fmt.Sprintf("x.%s = parent.%s", f.GoName, f.GoName))
 	}
 
-	px.WritelnIndent(1, `return x`)
-	px.Writeln("}")
+	px.WritelnIndent(1, `return`)
+	px.Writeln("}\n")
+
+	px.Writeln("")
+	px.Writeln(fmt.Sprintf("func (x *%s) To%s() *%s {", m.GoIdent.GoName, parentName, parentName))
+	px.WritelnIndent(1, "if x == nil {")
+	px.WritelnIndent(2, "return &%s{}", parentName)
+	px.WritelnIndent(1, "}")
+
+	px.WritelnIndent(1, "target := &%s{}", parentName)
+
+	for _, f := range parentMsg.Fields {
+		if slices.Contains(opt.Omit, string(f.Desc.Name())) {
+			continue
+		}
+		px.WritelnIndent(1, fmt.Sprintf("target.%s = x.%s", f.GoName, f.GoName))
+	}
+
+	px.WritelnIndent(1, `return target`)
+	px.Writeln("}\n")
+
 	return nil
 }
 

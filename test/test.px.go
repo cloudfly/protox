@@ -76,9 +76,9 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
-func (x *TestInherit) FromTestCommon(parent *TestCommon) *TestInherit {
+func (x *TestInherit) FromTestCommon(parent *TestCommon) {
 	if x == nil || parent == nil {
-		return x
+		return
 	}
 	x.Id = parent.Id
 	x.Name = parent.Name
@@ -87,8 +87,25 @@ func (x *TestInherit) FromTestCommon(parent *TestCommon) *TestInherit {
 	x.ProjectId = parent.ProjectId
 	x.CreateTime = parent.CreateTime
 	x.UpdateTime = parent.UpdateTime
-	return x
+	return
 }
+
+
+func (x *TestInherit) ToTestCommon() *TestCommon {
+	if x == nil {
+		return &TestCommon{}
+	}
+	target := &TestCommon{}
+	target.Id = x.Id
+	target.Name = x.Name
+	target.PublicId = x.PublicId
+	target.Description = x.Description
+	target.ProjectId = x.ProjectId
+	target.CreateTime = x.CreateTime
+	target.UpdateTime = x.UpdateTime
+	return target
+}
+
 
 func (x TestInherit) JSON() ([]byte, error) {
 	data := map[string]any{
@@ -117,12 +134,12 @@ func (x *TestInherit) FromJSON(content []byte) (error) {
 
 func (x Error) Error() string {
 	switch x {
-		case Error_InternalServerError: 
-			return "internal_server_error"
 		case Error_PermissionDenied: 
 			return "permission_denied"
 		case Error_NotFound: 
 			return "not_found"
+		case Error_InternalServerError: 
+			return "internal_server_error"
 	}
 	return fmt.Sprintf("unknown Error %d", x)
 }
