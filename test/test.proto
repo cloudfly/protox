@@ -39,6 +39,7 @@ message TestCommon {
 }
 
 message TestInherit {
+  int32 type = 3;
   option (protox.inherit) = {
     message: "TestCommon",
     omit: ["Public", "type"]

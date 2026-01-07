@@ -76,7 +76,7 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
-func (x *TestInherit)FromTestCommon(parent *TestCommon) *TestInherit {
+func (x *TestInherit) FromTestCommon(parent *TestCommon) *TestInherit {
 	if x == nil || parent == nil {
 		return x
 	}
@@ -92,9 +92,9 @@ func (x *TestInherit)FromTestCommon(parent *TestCommon) *TestInherit {
 
 func (x TestInherit) JSON() ([]byte, error) {
 	data := map[string]any{
+		"Type": x.Type,
 		"NAME": x.Name,
 		"PublicId": x.PublicId,
-		"Type": x.Type,
 		"Description": x.Description,
 		"ProjectId": x.ProjectId,
 		"CreateTime": x.CreateTime,
@@ -105,9 +105,8 @@ func (x TestInherit) JSON() ([]byte, error) {
 
 func (x *TestInherit) FromJSON(content []byte) (error) {
 	data := map[string]any{
-		"_public": &x.Public,
-		"PublicId": &x.PublicId,
 		"Type": &x.Type,
+		"PublicId": &x.PublicId,
 		"Description": &x.Description,
 		"ProjectId": &x.ProjectId,
 		"CreateTime": &x.CreateTime,

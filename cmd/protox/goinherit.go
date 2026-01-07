@@ -35,3 +35,24 @@ func generateGoInherit(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *pr
 	px.Writeln("}")
 	return nil
 }
+
+func findMessage(gen *protogen.Plugin, name string, fromPkg string) *protogen.Message {
+	for _, f := range gen.Files {
+		pkg := f.Proto.GetPackage()
+		for _, msg := range f.Messages {
+			if pkg == fromPkg {
+				// inherit message in same file
+				if string(msg.Desc.Name()) == name {
+					return msg
+				}
+			} else {
+				// inherit a message from other package
+				if pkg+"."+string(msg.Desc.Name()) == name {
+					return msg
+				}
+			}
+
+		}
+	}
+	return nil
+}
