@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 
@@ -41,15 +42,7 @@ func generateGoTag(px *pxFile, f *protogen.File, generatedContent []byte) error 
 			}
 		}
 	}
-	filename := f.GeneratedFilenamePrefix + ".pb.go"
-
-	if generatedContent == nil {
-		_, err := os.Stat(filename)
-		if os.IsNotExist(err) {
-			log.Warn().Str("file", filename).Str("proto", f.Desc.Path()).Msg("target pb.go file not exist, skip generate gotag")
-			return nil
-		}
-	}
+	filename := path.Join(*outDir, f.GeneratedFilenamePrefix+".pb.go")
 
 	areas, err := parseGoFile(filename, generatedContent, data)
 	if err != nil {
@@ -60,6 +53,9 @@ func generateGoTag(px *pxFile, f *protogen.File, generatedContent []byte) error 
 		area := areas[len(areas)-i-1]
 		log.Info().Msgf("inject custom tag %q to expression %q", area.InjectTag, string(generatedContent[area.Start-1:area.End-1]))
 		generatedContent = injectTag(generatedContent, area)
+	}
+	if err := os.MkdirAll(path.Dir(filename), 0755); err != nil {
+		return err
 	}
 	if err = os.WriteFile(filename, generatedContent, 0o644); err != nil {
 		return err
@@ -118,12 +114,6 @@ func parseGoFile(inputPath string, src []byte, tags map[string]string) (areas []
 		}
 	}
 	log.Info().Msgf("parsed file %q, number of fields to inject custom tags: %d", inputPath, len(areas))
-	return
-}
-
-func writeGoFile(inputPath string, content []byte, areas []textArea) (err error) {
-	// inject custom tags from tail of file first to preserve order
-
 	return
 }
 
