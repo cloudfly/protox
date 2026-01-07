@@ -60,7 +60,7 @@ func main() {
 				}
 				log.Info().Str("file", filename).Msg("Completed generating .pb.go file")
 
-				if err := handleFile(px, f); err != nil {
+				if err := handleFile(px, gen, f); err != nil {
 					return err
 				}
 				log.Info().Str("file", filename).Msg("Completed handling .px.go file ...")
@@ -86,9 +86,9 @@ func shouldGenerate(f *protogen.File) bool {
 	return true
 }
 
-func handleFile(px *pxFile, f *protogen.File) error {
+func handleFile(px *pxFile, gen *protogen.Plugin, f *protogen.File) error {
 	for _, message := range f.Messages {
-		if err := handleMessage(px, f, message); err != nil {
+		if err := handleMessage(px, gen, f, message); err != nil {
 			return err
 		}
 	}
@@ -107,7 +107,7 @@ func handleEnum(px *pxFile, f *protogen.File, e *protogen.Enum) error {
 	return nil
 }
 
-func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
+func handleMessage(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *protogen.Message) error {
 	if opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions); opt != nil {
 		if proto.HasExtension(opt, protox.E_Method) {
 			if err := generateGoMethods(px, m, proto.GetExtension(opt, protox.E_Method)); err != nil {
@@ -116,6 +116,11 @@ func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 		}
 		if proto.HasExtension(opt, protox.E_Sql) {
 			if err := generateSerializer(px, m, proto.GetExtension(opt, protox.E_Sql)); err != nil {
+				return err
+			}
+		}
+		if proto.HasExtension(opt, protox.E_Inherit) {
+			if err := generateGoInherit(px, gen, f, m, proto.GetExtension(opt, protox.E_Inherit)); err != nil {
 				return err
 			}
 		}

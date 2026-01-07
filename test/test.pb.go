@@ -192,10 +192,13 @@ type TestInherit struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id   int64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name *string `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Id     int64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name   *string `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Public *string `protobuf:"bytes,3,opt,name=Public,proto3,oneof" json:"Public,omitempty"`
 	// @gotags: db:"-" json:"id"
 	PublicId string `protobuf:"bytes,5,opt,name=publicId,proto3" json:"publicId,omitempty"`
+	// @gotags: db:"type"
+	Type string `protobuf:"bytes,8,opt,name=type,proto3" json:"type,omitempty"` // 'enum' | 'message'
 	// @gotags: db:"description"
 	Description string `protobuf:"bytes,9,opt,name=description,proto3" json:"description,omitempty"`
 	// @gotags: db:"fields"
@@ -252,9 +255,23 @@ func (x *TestInherit) GetName() string {
 	return ""
 }
 
+func (x *TestInherit) GetPublic() string {
+	if x != nil && x.Public != nil {
+		return *x.Public
+	}
+	return ""
+}
+
 func (x *TestInherit) GetPublicId() string {
 	if x != nil {
 		return x.PublicId
+	}
+	return ""
+}
+
+func (x *TestInherit) GetType() string {
+	if x != nil {
+		return x.Type
 	}
 	return ""
 }
