@@ -76,36 +76,36 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 
 func (x TestOrmx) OrmxColumnOption(fieldName string) string {
 	switch fieldName {
+		case "Noop": 
+			return "noop"
 		case "Id": 
 			return "id,insert:true"
 		case "Name": 
 			return "name,insert:true,select:true,update:false,op:eq"
-		case "Noop": 
-			return "noop"
 	}
 	return ""
 }
 
 func (x TestOrmx) OrmxColumn(fieldName string) string {
 	switch fieldName {
+		case "Noop": 
+			return "noop"
 		case "Id": 
 			return "id"
 		case "Name": 
 			return "name"
-		case "Noop": 
-			return "noop"
 	}
 	return ""
 }
 
 func (x Error) Error() string {
 	switch x {
+		case Error_NotFound: 
+			return "not_found"
 		case Error_InternalServerError: 
 			return "internal_server_error"
 		case Error_PermissionDenied: 
 			return "permission_denied"
-		case Error_NotFound: 
-			return "not_found"
 	}
 	return fmt.Sprintf("unknown Error %d", x)
 }

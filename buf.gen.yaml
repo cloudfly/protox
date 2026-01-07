@@ -2,9 +2,6 @@ version: v2
 inputs:
   - directory: .
 plugins:
-  - local: protoc-gen-go
-    out: .
-    opt: paths=source_relative
   - local: ./protox
-    out: test
+    out: .
     opt: paths=source_relative

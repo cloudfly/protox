@@ -13,10 +13,10 @@ import (
 	"github.com/k0kubun/pp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	gengo "google.golang.org/protobuf/cmd/protoc-gen-go/internal_gengo"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/pluginpb"
 )
 
 var _ = pp.Println
@@ -30,31 +30,40 @@ var (
 	outDir = flags.String("out", ".", "the output directory")
 )
 
-var (
-	plugin *protogen.Plugin
-)
-
 func main() {
 	filenames := []string{}
 	protogen.Options{ParamFunc: flags.Set}.Run(func(gen *protogen.Plugin) error {
-		plugin = gen
-		gen.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 		for p, f := range gen.FilesByPath {
-			if f.GoImportPath == "github.com/cloudfly/protox" {
-				// ignore the protox.proto
-				continue
+			if shouldGenerate(f) {
+				gengo.GenerateFile(gen, f)
+				filenames = append(filenames, p)
 			}
-			if strings.HasPrefix(string(f.GoImportPath), "google.golang.org") {
-				continue
-			}
+		}
 
-			if err := handleFile(p, f); err != nil {
-				return err
+		gen.SupportedFeatures = gengo.SupportedFeatures
+		for p, f := range gen.FilesByPath {
+			if shouldGenerate(f) {
+				if err := handleFile(p, f); err != nil {
+					return err
+				}
 			}
-			filenames = append(filenames, p)
 		}
 		return nil
 	})
+}
+
+func shouldGenerate(f *protogen.File) bool {
+	if !f.Generate {
+		return false
+	}
+	if f.GoImportPath == "github.com/cloudfly/protox" {
+		// ignore the protox.proto
+		return false
+	}
+	if strings.HasPrefix(string(f.GoImportPath), "google.golang.org") {
+		return false
+	}
+	return true
 }
 
 func handleFile(filename string, f *protogen.File) error {
