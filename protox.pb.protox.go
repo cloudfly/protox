@@ -24,7 +24,7 @@ func (x *Timestamp) UnmarshalJSON(content []byte) error {
 	}
 	switch value := v.(type) {
 	case string:
-		t, err := time.Parse(time.RFC3339, value)
+		t, err := time.Parse(time.DateTime, value)
 		if err != nil {
 			return err
 		}
@@ -43,6 +43,20 @@ func (x *Timestamp) Scan(src any) error {
 		x.Nanos = uint32(v.Nanosecond())
 	case int64:
 		x.Seconds = uint32(v)
+	case string:
+		t, err := time.Parse(time.DateTime, v)
+		if err != nil {
+			return err
+		}
+		x.Seconds = uint32(t.Unix())
+		x.Nanos = uint32(t.Nanosecond())
+	case []byte:
+		t, err := time.Parse(time.DateTime, string(v))
+		if err != nil {
+			return err
+		}
+		x.Seconds = uint32(t.Unix())
+		x.Nanos = uint32(t.Nanosecond())
 	default:
 		return fmt.Errorf("unknown value type %d", src)
 	}
