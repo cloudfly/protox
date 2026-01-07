@@ -74,14 +74,26 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
-func (x TestOrmx) OrmxFieldOption(fieldName string) string {
+func (x TestOrmx) OrmxColumnOption(fieldName string) string {
 	switch fieldName {
+		case "Id": 
+			return "id,insert:true"
+		case "Name": 
+			return "name,insert:true,select:true,update:false,op:eq"
 		case "Noop": 
 			return "noop"
+	}
+	return ""
+}
+
+func (x TestOrmx) OrmxColumn(fieldName string) string {
+	switch fieldName {
 		case "Id": 
-			return "id,insert"
+			return "id"
 		case "Name": 
-			return "name,insert,select,op:eq"
+			return "name"
+		case "Noop": 
+			return "noop"
 	}
 	return ""
 }

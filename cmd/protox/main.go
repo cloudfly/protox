@@ -184,26 +184,25 @@ func generateOrmxFieldOption(f *pxFile, m *protogen.Message) error {
 		return nil
 	}
 
-	return generateOrmxFieldOptionMethod(f, m, ormxOptions)
+	return generateOrmxColumnOptionMethod(f, m, ormxOptions)
 }
 
-func generateOrmxFieldOptionMethod(f *pxFile, m *protogen.Message, opts map[string]*protox.OrmxOption) error {
+func generateOrmxColumnOptionMethod(f *pxFile, m *protogen.Message, opts map[string]*protox.OrmxOption) error {
 	f.Writeln("")
-	f.Writeln("func (x %s) OrmxFieldOption(fieldName string) string {", m.GoIdent.GoName)
-	defer f.Writeln("}")
+	f.Writeln("func (x %s) OrmxColumnOption(fieldName string) string {", m.GoIdent.GoName)
 
 	optstrs := make(map[string]string)
 	for name, opt := range opts {
 		s := &strings.Builder{}
 		s.WriteString(opt.GetColumn()) // column must can not be empty
-		if opt.GetInsert() {
-			s.WriteString(",insert")
+		if opt.Insert != nil {
+			s.WriteString(fmt.Sprintf(",insert:%t", *opt.Insert))
 		}
-		if opt.GetSelect() {
-			s.WriteString(",select")
+		if opt.Select != nil {
+			s.WriteString(fmt.Sprintf(",select:%t", *opt.Select))
 		}
-		if opt.GetUpdate() {
-			s.WriteString(",update")
+		if opt.Update != nil {
+			s.WriteString(fmt.Sprintf(",update:%t", *opt.Update))
 		}
 		if opt.Incr != nil {
 			s.WriteString(fmt.Sprintf(",incr:%d", opt.GetIncr()))
@@ -215,7 +214,7 @@ func generateOrmxFieldOptionMethod(f *pxFile, m *protogen.Message, opts map[stri
 			s.WriteString(fmt.Sprintf(",op:%s", op))
 		}
 		if t := opt.GetType(); t != "" {
-			s.WriteString(fmt.Sprintf("type=%s", t))
+			s.WriteString(fmt.Sprintf("type:%s", t))
 		}
 		optstrs[name] = s.String()
 	}
@@ -226,8 +225,20 @@ func generateOrmxFieldOptionMethod(f *pxFile, m *protogen.Message, opts map[stri
 		f.WritelnIndent(3, "return %q", optstr)
 	}
 	f.WritelnIndent(1, "}")
-
 	f.WritelnIndent(1, `return ""`)
+	f.Writeln("}")
+
+	f.Writeln("")
+	f.Writeln("func (x %s) OrmxColumn(fieldName string) string {", m.GoIdent.GoName)
+	f.WritelnIndent(1, "switch fieldName {")
+	for name, opt := range opts {
+		f.WritelnIndent(2, `case "%s": `, name)
+		f.WritelnIndent(3, "return %q", opt.Column)
+	}
+	f.WritelnIndent(1, "}")
+	f.WritelnIndent(1, `return ""`)
+
+	f.Writeln("}")
 
 	return nil
 }
