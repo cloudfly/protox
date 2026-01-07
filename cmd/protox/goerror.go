@@ -12,9 +12,9 @@ func generateGoError(f *pxFile, e *protogen.Enum) error {
 	defined := false
 	for _, ev := range e.Values {
 		opt, _ := ev.Desc.Options().(*descriptorpb.EnumValueOptions)
-		if opt != nil && proto.HasExtension(opt, protox.E_Goerror) {
+		if opt != nil && proto.HasExtension(opt, protox.E_Error) {
 			defined = true
-			value := proto.GetExtension(opt, protox.E_Goerror)
+			value := proto.GetExtension(opt, protox.E_Error)
 			errMsgs[ev.GoIdent.GoName] = value.(string)
 		} else {
 			errMsgs[ev.GoIdent.GoName] = ev.GoIdent.GoName

@@ -31,6 +31,12 @@ var (
 func main() {
 	protogen.Options{ParamFunc: flags.Set}.Run(func(gen *protogen.Plugin) error {
 		gen.SupportedFeatures = gengo.SupportedFeatures
+
+		// prev processes for .proto files
+		if err := prevProcess(gen); err != nil {
+			return err
+		}
+
 		for filename, f := range gen.FilesByPath {
 			if shouldGenerate(f) {
 				gendFile := gengo.GenerateFile(gen, f)
@@ -103,16 +109,17 @@ func handleEnum(px *pxFile, f *protogen.File, e *protogen.Enum) error {
 
 func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 	if opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions); opt != nil {
-		if proto.HasExtension(opt, protox.E_Gomethod) {
-			if err := generateGoMethods(px, m, proto.GetExtension(opt, protox.E_Gomethod)); err != nil {
+		if proto.HasExtension(opt, protox.E_Method) {
+			if err := generateGoMethods(px, m, proto.GetExtension(opt, protox.E_Method)); err != nil {
 				return err
 			}
 		}
-		if proto.HasExtension(opt, protox.E_Gosql) {
-			if err := generateSerializer(px, m, proto.GetExtension(opt, protox.E_Gosql)); err != nil {
+		if proto.HasExtension(opt, protox.E_Sql) {
+			if err := generateSerializer(px, m, proto.GetExtension(opt, protox.E_Sql)); err != nil {
 				return err
 			}
 		}
+
 	}
 
 	if err := generateGoJSONMarshaler(px, m); err != nil {
@@ -120,6 +127,7 @@ func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 	}
 
 	return nil
+
 }
 
 func generateSerializer(w *pxFile, m *protogen.Message, value any) error {

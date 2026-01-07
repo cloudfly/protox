@@ -76,6 +76,29 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
+func (x TestInherit) JSON() ([]byte, error) {
+	data := map[string]any{
+		"NAME": x.Name,
+		"PublicId": x.PublicId,
+		"Description": x.Description,
+		"ProjectId": x.ProjectId,
+		"CreateTime": x.CreateTime,
+		"UpdateTime": x.UpdateTime,
+	}
+	return json.Marshal(data)
+}
+
+func (x *TestInherit) FromJSON(content []byte) (error) {
+	data := map[string]any{
+		"PublicId": &x.PublicId,
+		"Description": &x.Description,
+		"ProjectId": &x.ProjectId,
+		"CreateTime": &x.CreateTime,
+		"UpdateTime": &x.UpdateTime,
+	}
+	return json.Unmarshal(content, &data)
+}
+
 func (x Error) Error() string {
 	switch x {
 		case Error_InternalServerError: 

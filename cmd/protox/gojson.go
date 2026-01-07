@@ -15,8 +15,8 @@ func generateGoJSONMarshaler(f *pxFile, m *protogen.Message) error {
 	defined := false
 	for _, field := range m.Fields {
 		opt, _ := field.Desc.Options().(*descriptorpb.FieldOptions)
-		if opt != nil && proto.HasExtension(opt, protox.E_Gojson) {
-			value := proto.GetExtension(opt, protox.E_Gojson)
+		if opt != nil && proto.HasExtension(opt, protox.E_Json) {
+			value := proto.GetExtension(opt, protox.E_Json)
 			if value.(string) == "" {
 				jsonNames[field.GoName] = JSONOption{Name: field.GoName}
 			} else {

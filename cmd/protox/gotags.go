@@ -36,8 +36,8 @@ func generateGoTag(px *pxFile, f *protogen.File, generatedContent []byte) error 
 	for _, m := range f.Messages {
 		for _, field := range m.Fields {
 			if opt, _ := field.Desc.Options().(*descriptorpb.FieldOptions); opt != nil {
-				if proto.HasExtension(opt, protox.E_Gotag) {
-					data[field.GoIdent.GoName] = proto.GetExtension(opt, protox.E_Gotag).(string)
+				if proto.HasExtension(opt, protox.E_Tag) {
+					data[field.GoIdent.GoName] = proto.GetExtension(opt, protox.E_Tag).(string)
 				}
 			}
 		}

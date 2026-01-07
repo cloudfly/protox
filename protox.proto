@@ -22,16 +22,22 @@ message SQLOption {
 	optional string serializer = 2 [targets = TARGET_TYPE_MESSAGE];
 }
 
+message InheritOption {
+	string message = 1 [targets = TARGET_TYPE_MESSAGE]; 
+	repeated string omit = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
 extend google.protobuf.MessageOptions {
-	repeated GoMethodOption gomethod = 78901;
-	optional SQLOption gosql = 78902;
+	repeated GoMethodOption method = 78901;
+	optional SQLOption sql = 78902;
+	optional InheritOption inherit = 78903;
 }
 
 extend google.protobuf.FieldOptions {
-	optional string gojson = 78902;
-	optional string gotag = 78904;
+	optional string json = 78902;
+	optional string tag = 78904;
 }
 
 extend google.protobuf.EnumValueOptions {
-	optional string goerror = 78903;
+	optional string error = 78903;
 }
