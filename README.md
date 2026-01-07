@@ -5,7 +5,7 @@
 ### 1. Copy `protox.proto` files.
 Add the `protox.proto` into your proto folder. The folder includes by folder configured in inputs section in `buf.yaml`
 
-```
+```text
 proto_directory/
   \_ protox/
      \_ protox.proto
@@ -13,7 +13,7 @@ proto_directory/
 
 ### 2. Import `protox.proto` in your on `.proto` file.
 
-```
+```protobuf
 syntax = "proto3";
 
 package test;
@@ -56,15 +56,22 @@ message Test {
 
 ### 3. Use protox plugin in buf.yaml
 
-```
+```sh
 go install github.com/cloudfly/protoxy/cmd/protox@latest
 ```
 
-```
+```yaml
 plugins:
   - local: protox
     out: gen
     opt: 
       - paths=source_relative
       - out=gen
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/username/project
+  disable:
+    - path: protox/protox.proto
 ```
