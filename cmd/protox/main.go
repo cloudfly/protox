@@ -32,11 +32,6 @@ func main() {
 	protogen.Options{ParamFunc: flags.Set}.Run(func(gen *protogen.Plugin) error {
 		gen.SupportedFeatures = gengo.SupportedFeatures
 
-		// prev processes for .proto files
-		if err := prevProcess(gen); err != nil {
-			return err
-		}
-
 		for filename, f := range gen.FilesByPath {
 			if shouldGenerate(f) {
 				gendFile := gengo.GenerateFile(gen, f)
@@ -124,7 +119,6 @@ func handleMessage(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *protog
 				return err
 			}
 		}
-
 	}
 
 	if err := generateGoJSONMarshaler(px, m); err != nil {
