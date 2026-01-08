@@ -192,19 +192,7 @@ type TestInherit struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Type int32   `protobuf:"varint,3,opt,name=type,proto3" json:"type,omitempty"`
-	Id   int64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name *string `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
-	// @gotags: db:"-" json:"id"
-	PublicId string `protobuf:"bytes,5,opt,name=publicId,proto3" json:"publicId,omitempty"`
-	// @gotags: db:"description"
-	Description string `protobuf:"bytes,9,opt,name=description,proto3" json:"description,omitempty"`
-	// @gotags: db:"fields"
-	ProjectId int64 `protobuf:"varint,11,opt,name=projectId,proto3" json:"projectId,omitempty"`
-	// @gotags: db:"createTime"
-	CreateTime *protox.Timestamp `protobuf:"bytes,12,opt,name=createTime,proto3" json:"createTime,omitempty"`
-	// @gotags: db:"updateTime"
-	UpdateTime *protox.Timestamp `protobuf:"bytes,13,opt,name=updateTime,proto3" json:"updateTime,omitempty"`
+	Type int32 `protobuf:"varint,3,opt,name=type,proto3" json:"type,omitempty"`
 }
 
 func (x *TestInherit) Reset() {
@@ -244,55 +232,6 @@ func (x *TestInherit) GetType() int32 {
 		return x.Type
 	}
 	return 0
-}
-
-func (x *TestInherit) GetId() int64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *TestInherit) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
-	}
-	return ""
-}
-
-func (x *TestInherit) GetPublicId() string {
-	if x != nil {
-		return x.PublicId
-	}
-	return ""
-}
-
-func (x *TestInherit) GetDescription() string {
-	if x != nil {
-		return x.Description
-	}
-	return ""
-}
-
-func (x *TestInherit) GetProjectId() int64 {
-	if x != nil {
-		return x.ProjectId
-	}
-	return 0
-}
-
-func (x *TestInherit) GetCreateTime() *protox.Timestamp {
-	if x != nil {
-		return x.CreateTime
-	}
-	return nil
-}
-
-func (x *TestInherit) GetUpdateTime() *protox.Timestamp {
-	if x != nil {
-		return x.UpdateTime
-	}
-	return nil
 }
 
 var File_test_test_proto protoreflect.FileDescriptor
@@ -370,13 +309,11 @@ var file_test_test_proto_goTypes = []interface{}{
 var file_test_test_proto_depIdxs = []int32{
 	3, // 0: test.TestCommon.createTime:type_name -> protox.Timestamp
 	3, // 1: test.TestCommon.updateTime:type_name -> protox.Timestamp
-	3, // 2: test.TestCommon.createTime:type_name -> protox.Timestamp
-	3, // 3: test.TestCommon.updateTime:type_name -> protox.Timestamp
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_test_test_proto_init() }

@@ -7,8 +7,7 @@ option go_package = "github.com/cloudfly/protox";
 import "google/protobuf/descriptor.proto";
 
 message Timestamp {
-	uint32 seconds = 1;
-	uint32 nanos = 2;
+	uint64 millis = 1;
 }
 
 message GoMethodOption {

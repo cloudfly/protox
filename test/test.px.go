@@ -76,62 +76,6 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 	return json.Unmarshal(content, &data)
 }
 
-func (x *TestInherit) FromTestCommon(parent *TestCommon) {
-	if x == nil || parent == nil {
-		return
-	}
-	x.Id = parent.Id
-	x.Name = parent.Name
-	x.PublicId = parent.PublicId
-	x.Description = parent.Description
-	x.ProjectId = parent.ProjectId
-	x.CreateTime = parent.CreateTime
-	x.UpdateTime = parent.UpdateTime
-	return
-}
-
-
-func (x *TestInherit) ToTestCommon() *TestCommon {
-	if x == nil {
-		return &TestCommon{}
-	}
-	target := &TestCommon{}
-	target.Id = x.Id
-	target.Name = x.Name
-	target.PublicId = x.PublicId
-	target.Description = x.Description
-	target.ProjectId = x.ProjectId
-	target.CreateTime = x.CreateTime
-	target.UpdateTime = x.UpdateTime
-	return target
-}
-
-
-func (x TestInherit) JSON() ([]byte, error) {
-	data := map[string]any{
-		"Type": x.Type,
-		"NAME": x.Name,
-		"PublicId": x.PublicId,
-		"Description": x.Description,
-		"ProjectId": x.ProjectId,
-		"CreateTime": x.CreateTime,
-		"UpdateTime": x.UpdateTime,
-	}
-	return json.Marshal(data)
-}
-
-func (x *TestInherit) FromJSON(content []byte) (error) {
-	data := map[string]any{
-		"Type": &x.Type,
-		"PublicId": &x.PublicId,
-		"Description": &x.Description,
-		"ProjectId": &x.ProjectId,
-		"CreateTime": &x.CreateTime,
-		"UpdateTime": &x.UpdateTime,
-	}
-	return json.Unmarshal(content, &data)
-}
-
 func (x Error) Error() string {
 	switch x {
 		case Error_InternalServerError: 
