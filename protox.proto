@@ -26,15 +26,21 @@ message InheritOption {
 	repeated string omit = 2 [targets = TARGET_TYPE_MESSAGE];
 }
 
+message ApiOption {
+	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
 extend google.protobuf.MessageOptions {
 	repeated GoMethodOption method = 78901;
 	optional SQLOption sql = 78902;
 	optional InheritOption inherit = 78903;
+	optional ApiOption api = 78904;
 }
 
 extend google.protobuf.FieldOptions {
 	optional string json = 78902;
 	optional string tag = 78904;
+	optional string class = 78905;
 }
 
 extend google.protobuf.EnumValueOptions {

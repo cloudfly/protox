@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package utils;
+
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/chenyunfei/protox/utils";
+
+
+message Pagination {
+	uint32 page = 1;
+	uint32 pageSize = 2;
+	repeated string order = 3;
+}
+
+message Empty {}
