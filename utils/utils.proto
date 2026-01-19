@@ -3,6 +3,7 @@ syntax = "proto3";
 package utils;
 
 import "google/protobuf/any.proto";
+import "protox.proto";
 
 option go_package = "github.com/cloudfly/protox/utils";
 
@@ -14,3 +15,13 @@ message Pagination {
 }
 
 message Empty {}
+
+
+message Base {
+	string id = 1 [(protox.tag) = 'json:"id" bson:"_id"'];
+	string lockSecret = 2 [(protox.tag) = 'json:"-" bson:"lockSecret"'];
+	int64 lockExpireAt = 3 [(protox.tag) = 'json:"lockExpireAt" bson:"lockExpireAt"'];
+	int64 version = 5 [(protox.tag) = 'json:"version" bson:"version"'];
+	int64 createAt = 6 [(protox.tag) = 'json:"createAt" bson:"createAt"'];
+	int64 updateAt = 7 [(protox.tag) = 'json:"updateAt" bson:"updateAt"'];
+}
