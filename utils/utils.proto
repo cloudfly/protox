@@ -25,3 +25,9 @@ message Base {
 	int64 createAt = 6 [(protox.tag) = 'json:"createAt" bson:"createAt"'];
 	int64 updateAt = 7 [(protox.tag) = 'json:"updateAt" bson:"updateAt"'];
 }
+
+message Index {
+	string name = 1 [(protox.tag) = 'json:"name"'];
+	repeated string fields = 2 [(protox.tag) = 'json:"fields"'];
+	bool unique = 3 [(protox.tag) = 'json:"unique"'];
+}
