@@ -24,8 +24,10 @@ func init() {
 }
 
 var (
-	flags  = flag.NewFlagSet("protox", flag.ContinueOnError)
-	outDir = flags.String("out", ".", "the output directory")
+	flags    = flag.NewFlagSet("protox", flag.ContinueOnError)
+	outDir   = flags.String("out", ".", "the output directory")
+	rootDir  = flags.String("root", "", "the root directory of protos")
+	genProto = flags.String("gen-proto", "", "generate the proto files")
 )
 
 func main() {
@@ -39,26 +41,16 @@ func main() {
 				// Therefore the generateGoTag() will generate .pb.go file instead.
 				gendFile.Skip()
 
-				px, err := newPxFile(filename, f)
+				var err error
+				if *genProto != "" {
+					log.Info().Str("root", *rootDir).Str("file", filename).Msg("Generating extend proto files...")
+					err = generateProtos(f)
+				} else {
+					err = generateGos(filename, gendFile, f)
+				}
 				if err != nil {
 					return err
 				}
-				defer px.Close()
-
-				log.Info().Str("file", filename).Bool("generate", f.Generate).Msg("Generating go tags ...")
-				content, err := gendFile.Content()
-				if err != nil {
-					return err
-				}
-				if err := generateGoTag(px, f, content); err != nil {
-					return err
-				}
-				log.Info().Str("file", filename).Msg("Completed generating .pb.go file")
-
-				if err := handleFile(px, gen, f); err != nil {
-					return err
-				}
-				log.Info().Str("file", filename).Msg("Completed handling .px.go file ...")
 			}
 		}
 		return nil
@@ -81,9 +73,46 @@ func shouldGenerate(f *protogen.File) bool {
 	return true
 }
 
-func handleFile(px *pxFile, gen *protogen.Plugin, f *protogen.File) error {
+func generateProtos(f *protogen.File) error {
+	for _, m := range f.Messages {
+		if opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions); opt != nil {
+			if proto.HasExtension(opt, protox.E_Api) {
+				if err := generateApiProto(f, m, proto.GetExtension(opt, protox.E_Api).(*protox.ApiOption)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func generateGos(filename string, gendFile *protogen.GeneratedFile, f *protogen.File) error {
+	px, err := newPxFile(filename, f)
+	if err != nil {
+		return err
+	}
+	defer px.Close()
+
+	log.Info().Str("file", filename).Bool("generate", f.Generate).Msg("Generating go tags ...")
+	content, err := gendFile.Content()
+	if err != nil {
+		return err
+	}
+	if err := generateGoTag(px, f, content); err != nil {
+		return err
+	}
+	log.Info().Str("file", filename).Msg("Completed generating .pb.go file")
+
+	if err := handleFile(px, f); err != nil {
+		return err
+	}
+	log.Info().Str("file", filename).Msg("Completed handling .px.go file ...")
+	return nil
+}
+
+func handleFile(px *pxFile, f *protogen.File) error {
 	for _, message := range f.Messages {
-		if err := handleMessage(px, gen, f, message); err != nil {
+		if err := handleMessage(px, f, message); err != nil {
 			return err
 		}
 	}
@@ -102,7 +131,7 @@ func handleEnum(px *pxFile, f *protogen.File, e *protogen.Enum) error {
 	return nil
 }
 
-func handleMessage(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *protogen.Message) error {
+func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 	if opt, _ := m.Desc.Options().(*descriptorpb.MessageOptions); opt != nil {
 		if proto.HasExtension(opt, protox.E_Method) {
 			if err := generateGoMethods(px, m, proto.GetExtension(opt, protox.E_Method)); err != nil {
@@ -128,7 +157,6 @@ func handleMessage(px *pxFile, gen *protogen.Plugin, f *protogen.File, m *protog
 	}
 
 	return nil
-
 }
 
 func generateSerializer(w *pxFile, m *protogen.Message, value any) error {

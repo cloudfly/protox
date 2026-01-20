@@ -28,6 +28,11 @@ message InheritOption {
 
 message ApiOption {
 	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
+	bool noCreate = 3 [targets = TARGET_TYPE_MESSAGE];
+	bool noUpdate = 4 [targets = TARGET_TYPE_MESSAGE];
+	bool noSelect = 5 [targets = TARGET_TYPE_MESSAGE];
+	bool noDelete = 6 [targets = TARGET_TYPE_MESSAGE];
+	bool noGet = 7 [targets = TARGET_TYPE_MESSAGE];
 }
 
 extend google.protobuf.MessageOptions {
