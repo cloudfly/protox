@@ -45,7 +45,7 @@ func main() {
 				}
 				defer px.Close()
 
-				log.Info().Str("file", filename).Msg("Generating go tags ...")
+				log.Info().Str("file", filename).Bool("generate", f.Generate).Msg("Generating go tags ...")
 				content, err := gendFile.Content()
 				if err != nil {
 					return err
