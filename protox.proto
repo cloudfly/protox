@@ -27,12 +27,18 @@ message InheritOption {
 }
 
 message ApiOption {
-	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
+	bool enable = 2 [targets = TARGET_TYPE_MESSAGE, targets = TARGET_TYPE_SERVICE];
 	bool noCreate = 3 [targets = TARGET_TYPE_MESSAGE];
 	bool noUpdate = 4 [targets = TARGET_TYPE_MESSAGE];
 	bool noSelect = 5 [targets = TARGET_TYPE_MESSAGE];
 	bool noDelete = 6 [targets = TARGET_TYPE_MESSAGE];
 	bool noGet = 7 [targets = TARGET_TYPE_MESSAGE];
+	optional string serviceName = 8 [targets = TARGET_TYPE_MESSAGE];
+	optional string targetMessageName = 20 [targets = TARGET_TYPE_SERVICE];
+	optional string targetMessageGoName = 21 [targets = TARGET_TYPE_SERVICE];
+	optional string targetMessageLocation = 22 [targets = TARGET_TYPE_SERVICE];
+	optional string targetMessageGoPackage = 23 [targets = TARGET_TYPE_SERVICE];
+	optional string targetMessageGoImportPath = 24 [targets = TARGET_TYPE_SERVICE];
 }
 
 extend google.protobuf.MessageOptions {
@@ -50,4 +56,8 @@ extend google.protobuf.FieldOptions {
 
 extend google.protobuf.EnumValueOptions {
 	optional string error = 78903;
+}
+
+extend google.protobuf.ServiceOptions {
+	optional ApiOption docx = 78904;
 }

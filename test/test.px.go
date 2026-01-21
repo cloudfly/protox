@@ -4,16 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"context"
-	"errors"
-)
-
-var (
-	_ = fmt.Printf
-	_ = driver.Bool
-	_ = json.Marshal
-	_ = context.Background
-	_ = errors.New
 )
 
 
@@ -78,12 +68,12 @@ func (x *TestCommon) FromJSON(content []byte) (error) {
 
 func (x Error) Error() string {
 	switch x {
-		case Error_NotFound: 
-			return "not_found"
 		case Error_InternalServerError: 
 			return "internal_server_error"
 		case Error_PermissionDenied: 
 			return "permission_denied"
+		case Error_NotFound: 
+			return "not_found"
 	}
 	return fmt.Sprintf("unknown Error %d", x)
 }

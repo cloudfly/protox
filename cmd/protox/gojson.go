@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-func generateGoJSONMarshaler(f *pxFile, m *protogen.Message) error {
+func generateGoJSONMarshaler(px *pxFile, m *protogen.Message) error {
 	jsonNames := make(map[string]JSONOption)
 	defined := false
 	for _, field := range m.Fields {
@@ -38,21 +38,23 @@ func generateGoJSONMarshaler(f *pxFile, m *protogen.Message) error {
 		return nil
 	}
 
-	if err := generateGoJSONMarshal(f, m, jsonNames); err != nil {
+	px.Import("encoding/json")
+
+	if err := generateGoJSONMarshal(px, m, jsonNames); err != nil {
 		return err
 	}
-	if err := generateGoJSONUnmarshal(f, m, jsonNames); err != nil {
+	if err := generateGoJSONUnmarshal(px, m, jsonNames); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func generateGoJSONMarshal(f *pxFile, m *protogen.Message, jsonNames map[string]JSONOption) error {
-	f.Writeln("")
-	f.Writeln("func (x %s) JSON() ([]byte, error) {", m.GoIdent.GoName)
-	defer f.Writeln("}")
-	f.WritelnIndent(1, "data := map[string]any{")
+func generateGoJSONMarshal(px *pxFile, m *protogen.Message, jsonNames map[string]JSONOption) error {
+	px.Writeln("")
+	px.Writeln("func (x %s) JSON() ([]byte, error) {", m.GoIdent.GoName)
+	defer px.Writeln("}")
+	px.WritelnIndent(1, "data := map[string]any{")
 	for _, field := range m.Fields {
 		if c := field.GoName[0]; c >= 'A' && c <= 'Z' {
 			// only handle exported Go Field
@@ -64,11 +66,11 @@ func generateGoJSONMarshal(f *pxFile, m *protogen.Message, jsonNames map[string]
 				// if field is writeonly, represent it should not be marshaled into JSON
 				continue
 			}
-			f.WritelnIndent(2, `"%s": x.%s,`, opt.Name, field.GoName)
+			px.WritelnIndent(2, `"%s": x.%s,`, opt.Name, field.GoName)
 		}
 	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, "return json.Marshal(data)")
+	px.WritelnIndent(1, "}")
+	px.WritelnIndent(1, "return json.Marshal(data)")
 	return nil
 }
 

@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-func generateGoError(f *pxFile, e *protogen.Enum) error {
+func generateGoError(px *pxFile, e *protogen.Enum) error {
 	errMsgs := make(map[string]string)
 	defined := false
 	for _, ev := range e.Values {
@@ -26,15 +26,17 @@ func generateGoError(f *pxFile, e *protogen.Enum) error {
 		return nil
 	}
 
-	f.Writeln("")
-	f.Writeln("func (x %s) Error() string {", e.GoIdent.GoName)
-	defer f.Writeln("}")
-	f.WritelnIndent(1, "switch x {")
+	px.Import("fmt")
+
+	px.Writeln("")
+	px.Writeln("func (x %s) Error() string {", e.GoIdent.GoName)
+	defer px.Writeln("}")
+	px.WritelnIndent(1, "switch x {")
 	for k, v := range errMsgs {
-		f.WritelnIndent(2, "case %s: ", k)
-		f.WritelnIndent(3, "return %q", v)
+		px.WritelnIndent(2, "case %s: ", k)
+		px.WritelnIndent(3, "return %q", v)
 	}
-	f.WritelnIndent(1, "}")
-	f.WritelnIndent(1, "return fmt.Sprintf(\"unknown %s %%d\", x)", e.GoIdent.GoName)
+	px.WritelnIndent(1, "}")
+	px.WritelnIndent(1, "return fmt.Sprintf(\"unknown %s %%d\", x)", e.GoIdent.GoName)
 	return nil
 }

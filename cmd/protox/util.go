@@ -21,18 +21,6 @@ func genWritelnln(w io.Writer, format string, args ...any) {
 	w.Write([]byte(fmt.Sprintf(format+"\n\n", args...)))
 }
 
-func genWriteLines(w io.Writer, lines ...string) {
-	for _, line := range lines {
-		w.Write([]byte(line + "\n"))
-	}
-}
-
-func genWriteLinesIndent(w io.Writer, indent int, lines ...string) {
-	for _, line := range lines {
-		w.Write([]byte(strings.Repeat("\t", indent) + line + "\n"))
-	}
-}
-
 func genImport(w io.Writer, imports ...string) {
 	genWriteln(w, "import (")
 	defer genWritelnln(w, ")")
@@ -41,7 +29,11 @@ func genImport(w io.Writer, imports ...string) {
 		if it == "" {
 			genWriteln(w, "")
 		} else {
-			genWritelnIndent(w, 1, "\"%s\"", it)
+			if strings.ContainsRune(it, '"') {
+				genWritelnIndent(w, 1, "%s", it)
+			} else {
+				genWritelnIndent(w, 1, "\"%s\"", it)
+			}
 		}
 	}
 }
