@@ -134,7 +134,7 @@ import "%s";`, f.Proto.GetPackage(), path.Base(f.Proto.GetName()))
 }
 
 func generateGos(filename string, gendFile *protogen.GeneratedFile, f *protogen.File) error {
-	px, err := newPxFile(filename, f)
+	px, err := newPxFile(filename, string(f.GoPackageName))
 	if err != nil {
 		return err
 	}
@@ -276,12 +276,12 @@ func pretty(v ...interface{}) {
 type pxFile struct {
 	started   bool
 	imports   []string
-	protoFile *protogen.File
+	goPackage string
 	buf       *bytes.Buffer
 	*os.File
 }
 
-func newPxFile(filename string, f *protogen.File) (*pxFile, error) {
+func newPxFile(filename string, goPackage string) (*pxFile, error) {
 	filename = path.Join(*outDir, strings.ReplaceAll(filename, ".proto", ".px.go"))
 	if err := os.MkdirAll(path.Dir(filename), 0755); err != nil {
 		return nil, err
@@ -291,7 +291,7 @@ func newPxFile(filename string, f *protogen.File) (*pxFile, error) {
 		return nil, err
 	}
 	return &pxFile{
-		protoFile: f,
+		goPackage: goPackage,
 		buf:       &bytes.Buffer{},
 		File:      px,
 	}, nil
@@ -299,7 +299,7 @@ func newPxFile(filename string, f *protogen.File) (*pxFile, error) {
 
 func (f *pxFile) Write(data []byte) (n int, err error) {
 	if !f.started {
-		if _, err = f.File.WriteString("package " + string(f.protoFile.GoPackageName) + "\n\n"); err != nil {
+		if _, err = f.File.WriteString("package " + f.goPackage + "\n\n"); err != nil {
 			return
 		}
 

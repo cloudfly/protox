@@ -1,23 +1,24 @@
-package utils
+package doc
 
 import (
 	_ "embed"
 	"html/template"
 	"net/http"
-
-	"google.golang.org/protobuf/compiler/protogen"
 )
 
 var (
-	services = map[string]*protogen.Service{}
+	services = map[string]*ServiceInfo{}
 )
 
 // embed: index.html
 var html string
 
-func Register(svc *protogen.Service) {
-	key := string(svc.Desc.FullName())
-	services[key] = svc
+func Register(svc interface{}) {
+	ss, err := ParseService(svc)
+	if err != nil {
+		panic(err)
+	}
+	services[ss.Name] = ss
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {

@@ -14,8 +14,6 @@ func generateGoDocxService(px *pxFile, f *protogen.File, s *protogen.Service, op
 		return nil
 	}
 
-	generateGoServiceRegister(px, s)
-
 	targetMessageName, err := getTargetMessageFullname(options)
 	if err != nil {
 		return err
@@ -43,18 +41,27 @@ func generateGoDocxService(px *pxFile, f *protogen.File, s *protogen.Service, op
 		px.Writeln("}\n")
 	}
 
-	return nil
+	return generateGoServiceRegister(f, s)
 }
 
-func generateGoServiceRegister(px *pxFile, s *protogen.Service) {
-	pkg := path.Base(path.Dir(px.protoFile.Proto.GetName()))
-	pkgName := pkg + "connect"
-	px.Import(string(px.protoFile.GoImportPath) + "/" + pkgName)
+func generateGoServiceRegister(f *protogen.File, s *protogen.Service) error {
+	goPackageName := string(f.GoPackageName) + "doc"
+	targetDir := path.Join(path.Dir(f.GeneratedFilenamePrefix), goPackageName)
+	targetFile := path.Join(targetDir, path.Base(f.Proto.GetName()))
+	px, err := newPxFile(targetFile, goPackageName)
+	if err != nil {
+		return err
+	}
+	defer px.Close()
+
+	connectPackageName := string(f.GoPackageName) + "connect"
+	px.Import(string(f.GoImportPath) + "/" + connectPackageName)
 	px.Import(`docutil "github.com/cloudfly/protox/utils/doc"`)
 
 	px.Writeln("func init() {")
-	px.WritelnIndent(1, "docutil.Register(%s.%sHandler)", pkgName, s.GoName)
+	px.WritelnIndent(1, "docutil.Register((*%s.%sHandler)(nil))", connectPackageName, s.GoName)
 	px.Writeln("}")
+	return nil
 }
 
 func generateGoDocxCreateMethodCode(px *pxFile, method *protogen.Method, targetMessageName string) {
