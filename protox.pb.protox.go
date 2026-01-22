@@ -4,6 +4,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (x *Timestamp) Scan(src any) error {
@@ -39,4 +41,17 @@ func (x *Timestamp) Time() time.Time {
 		return time.Unix(0, 0)
 	}
 	return time.UnixMilli(int64(x.Millis))
+}
+
+func (x Timestamp) MarshalBSON() ([]byte, error) {
+	return bson.Marshal(x.Time())
+}
+
+func (x *Timestamp) UnmarshalBSON(data []byte) error {
+	var t time.Time
+	if err := bson.Unmarshal(data, &t); err != nil {
+		return err
+	}
+	x.Millis = uint64(t.UnixMilli())
+	return nil
 }
