@@ -52,6 +52,8 @@ func (x *Timestamp) UnmarshalBSON(data []byte) error {
 	if err := bson.Unmarshal(data, &t); err != nil {
 		return err
 	}
-	x.Millis = uint64(t.UnixMilli())
+	*x = Timestamp{
+		Millis: uint64(t.UnixMilli()),
+	}
 	return nil
 }
