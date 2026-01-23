@@ -107,11 +107,47 @@ func generateFilterMessageFields(w io.Writer, m *protogen.Message) {
 		if !ok {
 			continue
 		}
-		genWritelnIndent(w, 1, "%s %s = %d;",
-			fieldProtoType(field.Desc, !slices.Contains(classes, "required")),
-			field.Desc.Name(),
-			field.Desc.Index(),
-		)
+		classmap := slice2map(classes)
+		_, required := classmap["required"]
+
+		added := false
+		for class := range classmap {
+			switch class {
+			case "in":
+				added = true
+				genWritelnIndent(w, 1, "%s %s = %d;",
+					fieldProtoType(field.Desc, !required),
+					field.Desc.Name()+"In",
+					field.Desc.Index(),
+				)
+			case "notin":
+				added = true
+				genWritelnIndent(w, 1, "%s %s = %d;",
+					fieldProtoType(field.Desc, !required),
+					field.Desc.Name()+"NotIn",
+					field.Desc.Index(),
+				)
+			case "have":
+			case "nothave":
+			case "like":
+				added = true
+			case "isnot":
+			case "is":
+				genWritelnIndent(w, 1, "%s %s = %d;",
+					fieldProtoType(field.Desc, !required),
+					field.Desc.Name(),
+					field.Desc.Index(),
+				)
+			}
+		}
+		if !added {
+			genWritelnIndent(w, 1, "%s %s = %d;",
+				fieldProtoType(field.Desc, !required),
+				field.Desc.Name(),
+				field.Desc.Index(),
+			)
+		}
+
 	}
 }
 
@@ -223,4 +259,12 @@ func fieldProtoType(field protoreflect.FieldDescriptor, optional bool) string {
 		return prefix + string(msg.FullName())
 	}
 	return prefix + field.Kind().String()
+}
+
+func slice2map(slice []string) map[string]bool {
+	m := make(map[string]bool)
+	for _, item := range slice {
+		m[item] = true
+	}
+	return m
 }

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func (x *Timestamp) Scan(src any) error {
@@ -44,16 +45,19 @@ func (x *Timestamp) Time() time.Time {
 }
 
 func (x Timestamp) MarshalBSON() ([]byte, error) {
-	return bson.Marshal(x.Time())
+	return bson.Marshal(primitive.Timestamp{
+		T: uint32(x.Millis / 1000),
+		I: uint32(x.Millis % 1000), // I is the increment. You may need to provide a meaningful value.
+	})
 }
 
 func (x *Timestamp) UnmarshalBSON(data []byte) error {
-	var t time.Time
-	if err := bson.Unmarshal(data, &t); err != nil {
+	var ts primitive.Timestamp
+	if err := bson.Unmarshal(data, &ts); err != nil {
 		return err
 	}
 	*x = Timestamp{
-		Millis: uint64(t.UnixMilli()),
+		Millis: uint64(ts.T)*1000 + uint64(ts.I),
 	}
 	return nil
 }
