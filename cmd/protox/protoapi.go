@@ -234,13 +234,15 @@ func generateService(w io.Writer, f *protogen.File, m *protogen.Message, options
 		genWritelnIndent(w, 1, "rpc Delete%s(Delete%sRequest) returns (google.protobuf.Empty);", messageName, messageName)
 	}
 
-	genWritelnIndent(w, 1, "option (protox.docx) = {")
-	genWritelnIndent(w, 2, "enable: true,")
-	genWritelnIndent(w, 2, "targetMessageName: \"%s\",", m.Desc.Name())
-	genWritelnIndent(w, 2, "targetMessageGoName: \"%s\",", m.GoIdent.GoName)
-	genWritelnIndent(w, 2, "targetMessageLocation: \"%s\",", m.Location.SourceFile)
-	genWritelnIndent(w, 2, "targetMessageGoImportPath: %s,", m.GoIdent.GoImportPath)
-	genWritelnIndent(w, 1, "};")
+	/*
+		genWritelnIndent(w, 1, "option (protox.docx) = {")
+		genWritelnIndent(w, 2, "enable: true,")
+		genWritelnIndent(w, 2, "targetMessageName: \"%s\",", m.Desc.Name())
+		genWritelnIndent(w, 2, "targetMessageGoName: \"%s\",", m.GoIdent.GoName)
+		genWritelnIndent(w, 2, "targetMessageLocation: \"%s\",", m.Location.SourceFile)
+		genWritelnIndent(w, 2, "targetMessageGoImportPath: %s,", m.GoIdent.GoImportPath)
+		genWritelnIndent(w, 1, "};")
+	*/
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func TestBSON(t *testing.T) {
@@ -16,10 +17,12 @@ func TestBSON(t *testing.T) {
 		Millis: uint64(time.Now().UnixMilli()),
 	}
 
-	data, err := timestamp.MarshalBSON()
+	data, err := bson.Marshal(timestamp)
 	require.NoError(err)
 
+	t.Log(data)
+
 	var timestamp2 Timestamp
-	require.NoError(timestamp2.UnmarshalBSON(data))
+	require.NoError(bson.Unmarshal(data, &timestamp2))
 	assert.Equal(timestamp, timestamp2)
 }

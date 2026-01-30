@@ -168,22 +168,6 @@ func handleFile(px *pxFile, f *protogen.File) error {
 			return err
 		}
 	}
-	for _, svc := range f.Services {
-		if err := handleService(px, f, svc); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func handleService(px *pxFile, f *protogen.File, svc *protogen.Service) error {
-	if opt, _ := svc.Desc.Options().(*descriptorpb.ServiceOptions); opt != nil {
-		if proto.HasExtension(opt, protox.E_Docx) {
-			if err := generateGoDocxService(px, f, svc, proto.GetExtension(opt, protox.E_Docx).(*protox.ApiOption)); err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
