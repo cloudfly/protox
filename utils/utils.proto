@@ -2,11 +2,7 @@ syntax = "proto3";
 
 package utils;
 
-import "google/protobuf/any.proto";
-import "protox.proto";
-
 option go_package = "github.com/cloudfly/protox/utils";
-
 
 message Pagination {
 	uint32 page = 1;
@@ -16,18 +12,3 @@ message Pagination {
 
 message Empty {}
 
-
-message Base {
-	optional string id = 1 [(protox.tag) = 'json:"id" bson:"_id,omitempty"'];
-	optional string lockSecret = 2 [(protox.tag) = 'json:"-" bson:"lockSecret,omitempty"'];
-	optional int64 lockExpireAt = 3 [(protox.tag) = 'json:"lockExpireAt" bson:"lockExpireAt,omitempty"'];
-	optional int64 version = 5 [(protox.tag) = 'json:"version" bson:"version,omitempty"'];
-	optional int64 createAt = 6 [(protox.tag) = 'json:"createAt" bson:"createAt,omitempty"'];
-	optional int64 updateAt = 7 [(protox.tag) = 'json:"updateAt" bson:"updateAt,omitempty"'];
-}
-
-message Index {
-	string name = 1 [(protox.tag) = 'json:"name"'];
-	repeated string fields = 2 [(protox.tag) = 'json:"fields"'];
-	bool unique = 3 [(protox.tag) = 'json:"unique"'];
-}
