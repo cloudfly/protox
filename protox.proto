@@ -1,0 +1,57 @@
+syntax="proto3";
+
+package protox;
+
+option go_package = "github.com/cloudfly/protox";
+
+import "google/protobuf/descriptor.proto";
+
+message Timestamp {
+	uint64 millis = 1;
+}
+
+message GoMethodOption {
+	string name = 1 [targets = TARGET_TYPE_MESSAGE];
+	optional string returnString = 2 [targets = TARGET_TYPE_MESSAGE];
+	optional int64 returnInt64 = 3 [targets = TARGET_TYPE_MESSAGE];
+	optional bool returnBool = 4 [targets = TARGET_TYPE_MESSAGE];
+}
+
+message SQLOption {
+	optional string serializer = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
+message InheritOption {
+	string message = 1 [targets = TARGET_TYPE_MESSAGE]; 
+	repeated string omit = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
+message ApiOption {
+	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
+}
+
+message OrmOption {
+	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
+	optional string table = 3 [targets = TARGET_TYPE_MESSAGE];
+	optional string filterMessage = 4 [targets = TARGET_TYPE_MESSAGE];
+	optional string patchMessage = 5 [targets = TARGET_TYPE_MESSAGE];
+}
+
+extend google.protobuf.MessageOptions {
+	repeated GoMethodOption method = 78901;
+	optional SQLOption sql = 78902;
+	optional InheritOption inherit = 78903;
+	optional ApiOption api = 78904;
+	optional OrmOption orm = 78905;
+	optional bool doc = 78906;
+}
+
+extend google.protobuf.FieldOptions {
+	optional string json = 78902;
+	optional string tag = 78904;
+	optional string class = 78905;
+}
+
+extend google.protobuf.EnumValueOptions {
+	optional string error = 78903;
+}

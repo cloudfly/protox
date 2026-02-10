@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package test;
+
+option go_package = "github.com/cloudfly/protox/test";
+
+import "protox.proto";
+
+message TestCommon {
+  int64 id = 1 [(protox.json) = '-'];
+
+  optional string name   = 2 [(protox.json) = "NAME,readonly", (protox.tag) = "db:\"name\", op:\"eq\""];
+  optional string Public = 3 [(protox.json) = "_public,writeonly", (protox.tag) = "db:\"public\""];
+
+  // @gotags: db:"-" json:"id"
+  string publicId = 5;
+  // @gotags: db:"type"
+  string type = 8; // 'enum' | 'message'
+  // @gotags: db:"description"
+  string description = 9;
+  // @gotags: db:"fields"
+  int64 projectId = 11;
+  // @gotags: db:"createTime"
+  protox.Timestamp createTime = 12;
+  // @gotags: db:"updateTime"
+  protox.Timestamp updateTime = 13;
+
+  option (protox.sql) = {
+    serializer: "json"
+  };
+  option (protox.method) = {
+    name  : "Table",
+    returnString: "Test"
+  };
+  option (protox.method) = {
+    name  : "Error",
+    returnString: "test error"
+  };
+}
+
+message TestInherit {
+  int32 type = 3;
+  option (protox.inherit) = {
+    message: "TestCommon",
+    omit: ["Public", "type"]
+  };
+}
+
+enum Error {
+	InternalServerError = 0 [(protox.error) = "internal_server_error"];
+	PermissionDenied = 1 [(protox.error) = "permission_denied"];
+	NotFound = 2 [(protox.error) = "not_found"];
+}
