@@ -22,6 +22,9 @@ func genWritelnln(w io.Writer, format string, args ...any) {
 }
 
 func genImport(w io.Writer, imports ...string) {
+	if len(imports) == 0 {
+		return
+	}
 	genWriteln(w, "import (")
 	defer genWritelnln(w, ")")
 

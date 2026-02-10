@@ -28,12 +28,13 @@ message InheritOption {
 
 message ApiOption {
 	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
-	bool noCreate = 3 [targets = TARGET_TYPE_MESSAGE];
-	bool noUpdate = 4 [targets = TARGET_TYPE_MESSAGE];
-	bool noSelect = 5 [targets = TARGET_TYPE_MESSAGE];
-	bool noDelete = 6 [targets = TARGET_TYPE_MESSAGE];
-	bool noGet = 7 [targets = TARGET_TYPE_MESSAGE];
-	optional string serviceName = 8 [targets = TARGET_TYPE_MESSAGE];
+}
+
+message OrmOption {
+	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
+	optional string table = 3 [targets = TARGET_TYPE_MESSAGE];
+	optional string filterMessage = 4 [targets = TARGET_TYPE_MESSAGE];
+	optional string patchMessage = 5 [targets = TARGET_TYPE_MESSAGE];
 }
 
 extend google.protobuf.MessageOptions {
@@ -41,6 +42,8 @@ extend google.protobuf.MessageOptions {
 	optional SQLOption sql = 78902;
 	optional InheritOption inherit = 78903;
 	optional ApiOption api = 78904;
+	optional OrmOption orm = 78905;
+	optional bool doc = 78906;
 }
 
 extend google.protobuf.FieldOptions {

@@ -148,13 +148,11 @@ func handleMessage(px *pxFile, f *protogen.File, m *protogen.Message) error {
 				return err
 			}
 		}
-		/*
-			if proto.HasExtension(opt, protox.E_Inherit) {
-				if err := generateGoInherit(px, gen, f, m, proto.GetExtension(opt, protox.E_Inherit)); err != nil {
-					return err
-				}
+		if proto.HasExtension(opt, protox.E_Orm) {
+			if err := generateGoOrm(px, f, m, proto.GetExtension(opt, protox.E_Orm)); err != nil {
+				return err
 			}
-		*/
+		}
 	}
 
 	if err := generateGoJSONMarshaler(px, m); err != nil {
