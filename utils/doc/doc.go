@@ -6,13 +6,34 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 )
 
 //go:embed index.html
 var html string
 
-//go:embed index.md
-var markdown string
+//go:embed service.md
+var serviceTemplate string
+
+//go:embed message.md
+var messageTemplate string
+
+var (
+	serviceTmpl *template.Template
+	messageTmpl *template.Template
+)
+
+func init() {
+	var err error
+	serviceTmpl, err = template.New("doc").Parse(serviceTemplate)
+	if err != nil {
+		panic(err)
+	}
+	messageTmpl, err = template.New("doc").Parse(messageTemplate)
+	if err != nil {
+		panic(err)
+	}
+}
 
 func errorHandler(err error) http.HandlerFunc {
 	msg := err.Error()
@@ -25,27 +46,96 @@ func errorHandler(err error) http.HandlerFunc {
 	}
 }
 
+func responseError(w http.ResponseWriter, err error) {
+	msg := err.Error()
+	n := fmt.Sprintf("%d", len(msg))
+	w.WriteHeader(500)
+	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Length", n)
+	w.Write([]byte(err.Error()))
+}
+
 func MarkdownHandler(messages []*Message, services []*Service) http.HandlerFunc {
-	tmpl, err := template.New("doc").Parse(markdown)
-	if err != nil {
-		return errorHandler(err)
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query()
+		if query.Get("message") != "" {
+			serveMessageRequest(w, r, messages)
+		} else {
+			serveServiceRequest(w, r, services)
+		}
 	}
+}
+
+func serveServiceRequest(w http.ResponseWriter, r *http.Request, services []*Service) {
+	filteredServices := make([]*Service, 0, len(services))
+	search := r.URL.Query().Get("method")
+	if search != "" {
+		for _, svc := range services {
+			data := make([]Method, 0, len(services))
+			for _, method := range svc.Methods {
+				if strings.Contains(method.Name, search) {
+					data = append(data, method)
+				}
+			}
+			if len(data) > 0 {
+				svcCopy := &Service{
+					Name:    svc.Name,
+					Comment: svc.Comment,
+					Package: svc.Package,
+					Methods: data,
+				}
+				filteredServices = append(filteredServices, svcCopy)
+			}
+		}
+	} else {
+		filteredServices = services
+	}
+
 	buf := &bytes.Buffer{}
-	err = tmpl.Execute(buf, map[string]any{
-		"Messages": messages,
-		"Services": services,
+	err := serviceTmpl.Execute(buf, map[string]any{
+		"Services": filteredServices,
 	})
 	if err != nil {
-		return errorHandler(err)
+		responseError(w, err)
+		return
 	}
 	body := buf.Bytes()
 	bodyLength := fmt.Sprintf("%d", len(body))
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-		w.Header().Set("Content-Type", "text/plain")
-		w.Header().Set("Content-Length", bodyLength)
-		w.Write(body)
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Length", bodyLength)
+	w.Write(body)
+
+}
+
+func serveMessageRequest(w http.ResponseWriter, r *http.Request, messages []*Message) {
+	data := make([]*Message, 0, len(messages))
+	search := r.URL.Query().Get("message")
+
+	if search != "" {
+		for _, msg := range messages {
+			if strings.Contains(msg.Name, search) {
+				data = append(data, msg)
+			}
+		}
+	} else {
+		data = messages
 	}
+
+	buf := &bytes.Buffer{}
+	err := messageTmpl.Execute(buf, map[string]any{
+		"Messages": data,
+	})
+	if err != nil {
+		responseError(w, err)
+		return
+	}
+	body := buf.Bytes()
+	bodyLength := fmt.Sprintf("%d", len(body))
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Length", bodyLength)
+	w.Write(body)
 }
 
 func HtmlHandler(messages []*Message, services []*Service) http.HandlerFunc {

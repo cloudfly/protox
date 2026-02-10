@@ -49,6 +49,8 @@ func generateServiceDoc(w io.Writer, svc *protogen.Service, tab int) error {
 	genWritelnIndent(w, tab+1, "Name: \"%s\",", string(svc.Desc.Name()))
 	genWritelnIndent(w, tab+1, "Comment: []string{")
 	generateStringList(w, svc.Comments.LeadingDetached, tab+2)
+	generateStringList(w, []protogen.Comments{svc.Comments.Leading}, tab+2)
+	generateStringList(w, []protogen.Comments{svc.Comments.Trailing}, tab+2)
 	genWritelnIndent(w, tab+1, "},")
 	genWritelnIndent(w, tab+1, "Package: \"%s\",", string(svc.Desc.ParentFile().Package()))
 	genWritelnIndent(w, tab+1, "Methods: []doc.Method{")
@@ -68,6 +70,8 @@ func generateMethodDoc(w io.Writer, method *protogen.Method, tab int) error {
 	genWritelnIndent(w, tab+1, "Name: \"%s\",", string(method.Desc.Name()))
 	genWritelnIndent(w, tab+1, "Comment: []string{")
 	generateStringList(w, method.Comments.LeadingDetached, tab+2)
+	generateStringList(w, []protogen.Comments{method.Comments.Leading}, tab+2)
+	generateStringList(w, []protogen.Comments{method.Comments.Trailing}, tab+2)
 	genWritelnIndent(w, tab+1, "},")
 	genWritelnIndent(w, tab+1, "Input: &doc.Message{")
 	if err := generateMessageDoc(w, method.Input, tab+2); err != nil {
@@ -87,6 +91,8 @@ func generateMessageDoc(w io.Writer, m *protogen.Message, tab int) error {
 	genWritelnIndent(w, tab, "Name: \"%s\",", string(m.Desc.Name()))
 	genWritelnIndent(w, tab, "Comment: []string{")
 	generateStringList(w, m.Comments.LeadingDetached, tab+1)
+	generateStringList(w, []protogen.Comments{m.Comments.Leading}, tab+1)
+	generateStringList(w, []protogen.Comments{m.Comments.Trailing}, tab+1)
 	genWritelnIndent(w, tab, "},")
 	genWritelnIndent(w, tab, "Package: \"%s\",", string(m.Desc.ParentFile().Package()))
 	genWritelnIndent(w, tab, "Fields: []doc.Field{")
@@ -104,6 +110,8 @@ func generateFieldDoc(w io.Writer, f *protogen.Field, tab int) error {
 	genWritelnIndent(w, tab+1, "Name: \"%s\",", string(f.Desc.Name()))
 	genWritelnIndent(w, tab+1, "Comment: []string{")
 	generateStringList(w, f.Comments.LeadingDetached, tab+2)
+	generateStringList(w, []protogen.Comments{f.Comments.Leading}, tab+2)
+	generateStringList(w, []protogen.Comments{f.Comments.Trailing}, tab+2)
 	genWritelnIndent(w, tab+1, "},")
 	genWritelnIndent(w, tab+1, "Type: %q,", typeName(f.Desc, true))
 	genWritelnIndent(w, tab+1, "Required: %v,", !f.Desc.HasOptionalKeyword())
@@ -125,7 +133,10 @@ func generateFieldDoc(w io.Writer, f *protogen.Field, tab int) error {
 
 func generateStringList(w io.Writer, strs []protogen.Comments, indent int) {
 	for _, s := range strs {
-		genWritelnIndent(w, indent, "%q,", s)
+		x := strings.TrimLeft(string(s), "/ ")
+		if x != "" {
+			genWritelnIndent(w, indent, "%q,", x)
+		}
 	}
 }
 
@@ -136,6 +147,13 @@ func typeName(f protoreflect.FieldDescriptor, recursive bool) string {
 		} else if f.IsMap() {
 			return fmt.Sprintf("map[%s]%s", typeName(f.MapKey(), false), typeName(f.MapValue(), false))
 		}
+	}
+	// special cases
+	switch f.Message().FullName() {
+	case "protox.Timestamp":
+		return "int64"
+	case "google.protobuf.Empty":
+		return "{}"
 	}
 
 	switch f.Kind() {
