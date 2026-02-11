@@ -149,11 +149,13 @@ func typeName(f protoreflect.FieldDescriptor, recursive bool) string {
 		}
 	}
 	// special cases
-	switch f.Message().FullName() {
-	case "protox.Timestamp":
-		return "int64"
-	case "google.protobuf.Empty":
-		return "{}"
+	if f.Message() != nil {
+		switch f.Message().FullName() {
+		case "protox.Timestamp":
+			return "int64"
+		case "google.protobuf.Empty":
+			return "{}"
+		}
 	}
 
 	switch f.Kind() {
