@@ -121,7 +121,7 @@ func generateFieldDoc(w io.Writer, f *protogen.Field, tab int) error {
 			if tag != "" {
 				genWritelnIndent(w, tab+1, "Tags: map[string]string{")
 				for k, v := range parseGoTags(tag) {
-					genWritelnIndent(w, tab+2, fmt.Sprintf("%q: %s,", k, v))
+					genWritelnIndent(w, tab+2, fmt.Sprintf("%q: %q,", k, v))
 				}
 				genWritelnIndent(w, tab+1, "},")
 			}
@@ -174,15 +174,4 @@ func typeName(f protoreflect.FieldDescriptor, recursive bool) string {
 	default:
 		return f.Kind().String()
 	}
-}
-
-func parseGoTags(tag string) map[string]string {
-	tags := make(map[string]string)
-	for _, item := range strings.Split(tag, " ") {
-		kv := strings.Split(item, ":")
-		if len(kv) == 2 {
-			tags[kv[0]] = kv[1]
-		}
-	}
-	return tags
 }

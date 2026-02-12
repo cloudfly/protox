@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package test;
+
+option go_package = "github.com/cloudfly/protox/test";
+
+import "protox.proto";
+
+service TestService {
+  option (protox.mcp).enable = true;
+
+  rpc TestMethod(TestRequest) returns (TestResponse);
+  rpc TestMethod22(TestRequest) returns (TestResponse);
+}
+
+message TestRequest {
+  string query = 1;
+  int32 limit = 2;
+  Nested nested = 3;
+  repeated string tags = 4;
+  map<string, string> metadata = 5;
+}
+
+message Nested {
+  bool active = 1;
+}
+
+message TestResponse {
+  string result = 1;
+}

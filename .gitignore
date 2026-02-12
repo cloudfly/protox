@@ -28,3 +28,6 @@ _testmain.go
 protox
 
 !cmd/*
+
+connect/
+.connect/

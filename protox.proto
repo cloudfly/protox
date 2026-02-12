@@ -26,10 +26,6 @@ message InheritOption {
 	repeated string omit = 2 [targets = TARGET_TYPE_MESSAGE];
 }
 
-message ApiOption {
-	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
-}
-
 message OrmOption {
 	bool enable = 2 [targets = TARGET_TYPE_MESSAGE];
 	optional string table = 3 [targets = TARGET_TYPE_MESSAGE];
@@ -37,11 +33,18 @@ message OrmOption {
 	optional string patchMessage = 5 [targets = TARGET_TYPE_MESSAGE];
 }
 
+message MCPOption {
+	bool enable = 1 [targets = TARGET_TYPE_SERVICE];
+}
+
+extend google.protobuf.ServiceOptions {
+	optional MCPOption mcp = 78904;
+}
+
 extend google.protobuf.MessageOptions {
 	repeated GoMethodOption method = 78901;
 	optional SQLOption sql = 78902;
 	optional InheritOption inherit = 78903;
-	optional ApiOption api = 78904;
 	optional OrmOption orm = 78905;
 	optional bool doc = 78906;
 }

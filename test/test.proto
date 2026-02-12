@@ -9,7 +9,7 @@ import "protox.proto";
 message TestCommon {
   int64 id = 1 [(protox.json) = '-'];
 
-  optional string name   = 2 [(protox.json) = "NAME,readonly", (protox.tag) = "db:\"name\", op:\"eq\""];
+  optional string name   = 2 [(protox.json) = "NAME,readonly", (protox.tag) = "db:\"name\" op:\"eq\""];
   optional string Public = 3 [(protox.json) = "_public,writeonly", (protox.tag) = "db:\"public\""];
 
   // @gotags: db:"-" json:"id"

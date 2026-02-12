@@ -94,21 +94,6 @@ var ProtoxMessages = []*doc.Message{
 		},
 	},
 	{
-		Name: "ApiOption",
-		Comment: []string{
-		},
-		Package: "protox",
-		Fields: []doc.Field{
-			{
-				Name: "enable",
-				Comment: []string{
-				},
-				Type: "bool",
-				Required: true,
-			},
-		},
-	},
-	{
 		Name: "OrmOption",
 		Comment: []string{
 		},
@@ -141,6 +126,21 @@ var ProtoxMessages = []*doc.Message{
 				},
 				Type: "string",
 				Required: false,
+			},
+		},
+	},
+	{
+		Name: "MCPOption",
+		Comment: []string{
+		},
+		Package: "protox",
+		Fields: []doc.Field{
+			{
+				Name: "enable",
+				Comment: []string{
+				},
+				Type: "bool",
+				Required: true,
 			},
 		},
 	},

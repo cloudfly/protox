@@ -125,7 +125,23 @@ func handleFile(px *pxFile, f *protogen.File) error {
 			return err
 		}
 	}
+	for _, service := range f.Services {
+		if err := handleService(px, f, service); err != nil {
+			return err
+		}
+	}
 
+	return nil
+}
+
+func handleService(px *pxFile, f *protogen.File, s *protogen.Service) error {
+	if opt, _ := s.Desc.Options().(*descriptorpb.ServiceOptions); opt != nil {
+		if proto.HasExtension(opt, protox.E_Mcp) {
+			if err := generateMCPServer(f, s, proto.GetExtension(opt, protox.E_Mcp)); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
