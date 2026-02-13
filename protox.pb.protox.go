@@ -2,6 +2,7 @@ package protox
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -60,4 +61,12 @@ func (x *Timestamp) UnmarshalBSONValue(typ byte, data []byte) error {
 		Millis: uint64(ts.T)*1000 + uint64(ts.I),
 	}
 	return nil
+}
+
+func (x Timestamp) MarshalJSON() ([]byte, error) {
+	return json.Marshal(x.Millis)
+}
+
+func (x *Timestamp) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &x.Millis)
 }
