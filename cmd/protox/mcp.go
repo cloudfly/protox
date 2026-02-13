@@ -46,8 +46,9 @@ func generateToolFunc[In, Out any](f func(context.Context, *In) (*Out, error), i
 		}
 		return connect.NewResponse(out), nil
 	}
-	for _, interceptor := range interceptors {
-		h = interceptor.WrapUnary(h)
+	
+	for i := len(interceptors) - 1; i >= 0; i-- {
+		h = interceptors[i].WrapUnary(h)
 	}
 
 	return func(ctx context.Context, req *mcp.CallToolRequest, input *In) (*mcp.CallToolResult, *Out, error) {
