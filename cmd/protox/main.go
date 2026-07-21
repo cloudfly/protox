@@ -63,13 +63,6 @@ func main() {
 			}
 		}
 
-		for dir, pkg := range packages {
-			docFileName := path.Join(*outDir, dir, "protox.doc.go")
-			if err := generateDocs(docFileName, pkg, services[dir], messages[dir]); err != nil {
-				return err
-			}
-		}
-
 		return nil
 	})
 }
