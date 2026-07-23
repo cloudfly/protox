@@ -6,10 +6,6 @@ import (
 	"strings"
 )
 
-func genWrite(w io.Writer, format string, args ...any) {
-	w.Write([]byte(fmt.Sprintf(format, args...)))
-}
-
 func genWriteln(w io.Writer, format string, args ...any) {
 	w.Write([]byte(fmt.Sprintf(format+"\n", args...)))
 }
